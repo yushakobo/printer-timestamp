@@ -85,399 +85,401 @@ function sendMessage(request) {
     trader.sendMessage({request:request});
 }
 
-function onSendAscii() {
-    var builder = new StarWebPrintBuilder();
+//  function onSendAscii() {
+//      var builder = new StarWebPrintBuilder();
+//  
+//      request = '';
+//  
+//      request += builder.createInitializationElement();
+//  
+//      switch (document.getElementById('paperWidth').value) {
+//          case 'inch2' :
+//              request += builder.createTextElement({characterspace:2});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'Thank you for your coming. \n'});
+//              request += builder.createTextElement({data:"We hope you'll visit again.\n"});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Apple                $20.00\n'});
+//              request += builder.createTextElement({data:'Banana               $30.00\n'});
+//              request += builder.createTextElement({data:'Grape                $40.00\n'});
+//              request += builder.createTextElement({data:'Lemon                $50.00\n'});
+//              request += builder.createTextElement({data:'Orange               $60.00\n'});
+//              request += builder.createTextElement({emphasis:true, data:'Subtotal            $200.00\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'Tax                  $10.00\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'Total'});
+//              request += builder.createTextElement({width:1, data:'   '});
+//              request += builder.createTextElement({width:2, data:'$210.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Received            $300.00\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'Change'});
+//              request += builder.createTextElement({width:1, data:'   '});
+//              request += builder.createTextElement({width:2, data:'$90.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          case 'inch3DotImpact' :
+//              request += builder.createTextElement({characterspace:2});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'Thank you for your coming. \n'});
+//              request += builder.createTextElement({data:"We hope you'll visit again.\n"});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Apple                               $20.00\n'});
+//              request += builder.createTextElement({data:'Banana                              $30.00\n'});
+//              request += builder.createTextElement({data:'Grape                               $40.00\n'});
+//              request += builder.createTextElement({data:'Lemon                               $50.00\n'});
+//              request += builder.createTextElement({data:'Orange                              $60.00\n'});
+//              request += builder.createTextElement({emphasis:true, data:'Subtotal                           $200.00\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'Tax                                 $10.00\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'Total         $210.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Received                           $300.00\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'Change         $90.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          default :
+//              request += builder.createTextElement({characterspace:0});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'Thank you for your coming. \n'});
+//              request += builder.createTextElement({data:"We hope you'll visit again.\n"});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Apple                                     $20.00\n'});
+//              request += builder.createTextElement({data:'Banana                                    $30.00\n'});
+//              request += builder.createTextElement({data:'Grape                                     $40.00\n'});
+//              request += builder.createTextElement({data:'Lemon                                     $50.00\n'});
+//              request += builder.createTextElement({data:'Orange                                    $60.00\n'});
+//              request += builder.createTextElement({emphasis:true, data:'Subtotal                                 $200.00\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'Tax                                       $10.00\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'Total            $210.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Received                                 $300.00\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'Change            $90.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          case 'inch4' :
+//              request += builder.createTextElement({characterspace:1});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'Thank you for your coming. \n'});
+//              request += builder.createTextElement({data:"We hope you'll visit again.\n"});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Apple                                                     $20.00\n'});
+//              request += builder.createTextElement({data:'Banana                                                    $30.00\n'});
+//              request += builder.createTextElement({data:'Grape                                                     $40.00\n'});
+//              request += builder.createTextElement({data:'Lemon                                                     $50.00\n'});
+//              request += builder.createTextElement({data:'Orange                                                    $60.00\n'});
+//              request += builder.createTextElement({emphasis:true, data:'Subtotal                                                 $200.00\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'Tax                                                       $10.00\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'Total                    $210.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'Received                                                 $300.00\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'Change                    $90.00\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//      }
+//  
+//      request += builder.createCutPaperElement({feed:true});
+//  
+//      sendMessage(request);
+//  }
+//  
+//  function onSendKanji() {
+//  	showNowPrinting();
+//  
+//      var builder = new StarWebPrintBuilder();
+//  
+//      request = '';
+//  
+//      request += builder.createInitializationElement();
+//  
+//      var encoding = document.getElementById('encoding').value;
+//  
+//      // If you Send to printer that is not supported UTF8, DO NOT set codepage='utf8'.
+//      // UTF8に対応していないプリンタへ、漢字を送信する場合は、
+//      // codepage='utf8'を指定しないこと。
+//      // 正しく印刷できない場合がある。
+//      request += builder.createTextElement({codepage:encoding});
+//  
+//      switch (document.getElementById('paperWidth').value) {
+//          case 'inch2' :
+//              request += builder.createTextElement({characterspace:0, international:'japan'});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              //request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'お買い上げありがとうございます。またのご来店を、お待ちしております。\n'});
+//              request += builder.createTextElement({data:'数量予約も承っております。お気軽にご連絡ください。\n'});
+//              //request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'りんご                    \\2,000\n'});
+//              request += builder.createTextElement({data:'バナナ                    \\3,000\n'});
+//              request += builder.createTextElement({data:'ぶどう                    \\4,000\n'});
+//              request += builder.createTextElement({data:'レモン                    \\5,000\n'});
+//              request += builder.createTextElement({data:'みかん                    \\6,000\n'});
+//              request += builder.createTextElement({emphasis:true, data:'小計                     \\20,000\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'消費税                    \\1,000\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'合計     \\21,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'お預かり                 \\30,000\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'お釣り    \\9,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          case 'inch3DotImpact' :
+//              request += builder.createTextElement({characterspace:2, international:'japan'});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
+//              request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
+//              request += builder.createTextElement({data:'数量予約も承っております。\n'});
+//              request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'りんご                              \\2,000\n'});
+//              request += builder.createTextElement({data:'バナナ                              \\3,000\n'});
+//              request += builder.createTextElement({data:'ぶどう                              \\4,000\n'});
+//              request += builder.createTextElement({data:'レモン                              \\5,000\n'});
+//              request += builder.createTextElement({data:'みかん                              \\6,000\n'});
+//              request += builder.createTextElement({emphasis:true, data:'小計                               \\20,000\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'消費税                              \\1,000\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'合計          \\21,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'お預かり                           \\30,000\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'お釣り         \\9,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          default :
+//              request += builder.createTextElement({characterspace:0, international:'japan'});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
+//              request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
+//              request += builder.createTextElement({data:'数量予約も承っております。\n'});
+//              request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'りんご                                    \\2,000\n'});
+//              request += builder.createTextElement({data:'バナナ                                    \\3,000\n'});
+//              request += builder.createTextElement({data:'ぶどう                                    \\4,000\n'});
+//              request += builder.createTextElement({data:'レモン                                    \\5,000\n'});
+//              request += builder.createTextElement({data:'みかん                                    \\6,000\n'});
+//              request += builder.createTextElement({emphasis:true, data:'小計                                     \\20,000\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'消費税                                    \\1,000\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'合計             \\21,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'お預かり                                 \\30,000\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'お釣り            \\9,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//          case 'inch4' :
+//              request += builder.createTextElement({characterspace:1, international:'japan'});
+//  
+//              request += builder.createAlignmentElement({position:'right'});
+//  //            request += builder.createLogoElement({number:1});
+//              request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createAlignmentElement({position:'center'});
+//              request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
+//              request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
+//              request += builder.createTextElement({data:'数量予約も承っております。\n'});
+//              request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
+//              request += builder.createAlignmentElement({position:'left'});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'りんご                                                    \\2,000\n'});
+//              request += builder.createTextElement({data:'バナナ                                                    \\3,000\n'});
+//              request += builder.createTextElement({data:'ぶどう                                                    \\4,000\n'});
+//              request += builder.createTextElement({data:'レモン                                                    \\5,000\n'});
+//              request += builder.createTextElement({data:'みかん                                                    \\6,000\n'});
+//              request += builder.createTextElement({emphasis:true, data:'小計                                                     \\20,000\n'});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({underline:true, data:'消費税                                                    \\1,000\n'});
+//              request += builder.createTextElement({underline:false});
+//  
+//              request += builder.createTextElement({emphasis:true});
+//              request += builder.createTextElement({width:2, data:'合計                     \\21,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({emphasis:false});
+//  
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({data:'お預かり                                                 \\30,000\n'});
+//  
+//              request += builder.createTextElement({width:2, data:'お釣り                    \\9,000\n'});
+//              request += builder.createTextElement({width:1});
+//              request += builder.createTextElement({data:'\n'});
+//  
+//              request += builder.createTextElement({characterspace:0});
+//              break;
+//      }
+//  
+//      request += builder.createCutPaperElement({feed:true});
+//  
+//      sendMessage(request);
+//  }
 
-    request = '';
 
-    request += builder.createInitializationElement();
-
-    switch (document.getElementById('paperWidth').value) {
-        case 'inch2' :
-            request += builder.createTextElement({characterspace:2});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'Thank you for your coming. \n'});
-            request += builder.createTextElement({data:"We hope you'll visit again.\n"});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Apple                $20.00\n'});
-            request += builder.createTextElement({data:'Banana               $30.00\n'});
-            request += builder.createTextElement({data:'Grape                $40.00\n'});
-            request += builder.createTextElement({data:'Lemon                $50.00\n'});
-            request += builder.createTextElement({data:'Orange               $60.00\n'});
-            request += builder.createTextElement({emphasis:true, data:'Subtotal            $200.00\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'Tax                  $10.00\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'Total'});
-            request += builder.createTextElement({width:1, data:'   '});
-            request += builder.createTextElement({width:2, data:'$210.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Received            $300.00\n'});
-
-            request += builder.createTextElement({width:2, data:'Change'});
-            request += builder.createTextElement({width:1, data:'   '});
-            request += builder.createTextElement({width:2, data:'$90.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        case 'inch3DotImpact' :
-            request += builder.createTextElement({characterspace:2});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'Thank you for your coming. \n'});
-            request += builder.createTextElement({data:"We hope you'll visit again.\n"});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Apple                               $20.00\n'});
-            request += builder.createTextElement({data:'Banana                              $30.00\n'});
-            request += builder.createTextElement({data:'Grape                               $40.00\n'});
-            request += builder.createTextElement({data:'Lemon                               $50.00\n'});
-            request += builder.createTextElement({data:'Orange                              $60.00\n'});
-            request += builder.createTextElement({emphasis:true, data:'Subtotal                           $200.00\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'Tax                                 $10.00\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'Total         $210.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Received                           $300.00\n'});
-
-            request += builder.createTextElement({width:2, data:'Change         $90.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        default :
-            request += builder.createTextElement({characterspace:0});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'Thank you for your coming. \n'});
-            request += builder.createTextElement({data:"We hope you'll visit again.\n"});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Apple                                     $20.00\n'});
-            request += builder.createTextElement({data:'Banana                                    $30.00\n'});
-            request += builder.createTextElement({data:'Grape                                     $40.00\n'});
-            request += builder.createTextElement({data:'Lemon                                     $50.00\n'});
-            request += builder.createTextElement({data:'Orange                                    $60.00\n'});
-            request += builder.createTextElement({emphasis:true, data:'Subtotal                                 $200.00\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'Tax                                       $10.00\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'Total            $210.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Received                                 $300.00\n'});
-
-            request += builder.createTextElement({width:2, data:'Change            $90.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        case 'inch4' :
-            request += builder.createTextElement({characterspace:1});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'Thank you for your coming. \n'});
-            request += builder.createTextElement({data:"We hope you'll visit again.\n"});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Apple                                                     $20.00\n'});
-            request += builder.createTextElement({data:'Banana                                                    $30.00\n'});
-            request += builder.createTextElement({data:'Grape                                                     $40.00\n'});
-            request += builder.createTextElement({data:'Lemon                                                     $50.00\n'});
-            request += builder.createTextElement({data:'Orange                                                    $60.00\n'});
-            request += builder.createTextElement({emphasis:true, data:'Subtotal                                                 $200.00\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'Tax                                                       $10.00\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'Total                    $210.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'Received                                                 $300.00\n'});
-
-            request += builder.createTextElement({width:2, data:'Change                    $90.00\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-    }
-
-    request += builder.createCutPaperElement({feed:true});
-
-    sendMessage(request);
-}
-
-function onSendKanji() {
-	showNowPrinting();
-
-    var builder = new StarWebPrintBuilder();
-
-    request = '';
-
-    request += builder.createInitializationElement();
-
-    var encoding = document.getElementById('encoding').value;
-
-    // If you Send to printer that is not supported UTF8, DO NOT set codepage='utf8'.
-    // UTF8に対応していないプリンタへ、漢字を送信する場合は、
-    // codepage='utf8'を指定しないこと。
-    // 正しく印刷できない場合がある。
-    request += builder.createTextElement({codepage:encoding});
-
-    switch (document.getElementById('paperWidth').value) {
-        case 'inch2' :
-            request += builder.createTextElement({characterspace:0, international:'japan'});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            //request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'お買い上げありがとうございます。またのご来店を、お待ちしております。\n'});
-            request += builder.createTextElement({data:'数量予約も承っております。お気軽にご連絡ください。\n'});
-            //request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'りんご                    \\2,000\n'});
-            request += builder.createTextElement({data:'バナナ                    \\3,000\n'});
-            request += builder.createTextElement({data:'ぶどう                    \\4,000\n'});
-            request += builder.createTextElement({data:'レモン                    \\5,000\n'});
-            request += builder.createTextElement({data:'みかん                    \\6,000\n'});
-            request += builder.createTextElement({emphasis:true, data:'小計                     \\20,000\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'消費税                    \\1,000\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'合計     \\21,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'お預かり                 \\30,000\n'});
-
-            request += builder.createTextElement({width:2, data:'お釣り    \\9,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        case 'inch3DotImpact' :
-            request += builder.createTextElement({characterspace:2, international:'japan'});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
-            request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
-            request += builder.createTextElement({data:'数量予約も承っております。\n'});
-            request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'りんご                              \\2,000\n'});
-            request += builder.createTextElement({data:'バナナ                              \\3,000\n'});
-            request += builder.createTextElement({data:'ぶどう                              \\4,000\n'});
-            request += builder.createTextElement({data:'レモン                              \\5,000\n'});
-            request += builder.createTextElement({data:'みかん                              \\6,000\n'});
-            request += builder.createTextElement({emphasis:true, data:'小計                               \\20,000\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'消費税                              \\1,000\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'合計          \\21,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'お預かり                           \\30,000\n'});
-
-            request += builder.createTextElement({width:2, data:'お釣り         \\9,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        default :
-            request += builder.createTextElement({characterspace:0, international:'japan'});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
-            request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
-            request += builder.createTextElement({data:'数量予約も承っております。\n'});
-            request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'りんご                                    \\2,000\n'});
-            request += builder.createTextElement({data:'バナナ                                    \\3,000\n'});
-            request += builder.createTextElement({data:'ぶどう                                    \\4,000\n'});
-            request += builder.createTextElement({data:'レモン                                    \\5,000\n'});
-            request += builder.createTextElement({data:'みかん                                    \\6,000\n'});
-            request += builder.createTextElement({emphasis:true, data:'小計                                     \\20,000\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'消費税                                    \\1,000\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'合計             \\21,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'お預かり                                 \\30,000\n'});
-
-            request += builder.createTextElement({width:2, data:'お釣り            \\9,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-        case 'inch4' :
-            request += builder.createTextElement({characterspace:1, international:'japan'});
-
-            request += builder.createAlignmentElement({position:'right'});
-//            request += builder.createLogoElement({number:1});
-            request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createAlignmentElement({position:'center'});
-            request += builder.createTextElement({data:'お買い上げありがとうございました。\n'});
-            request += builder.createTextElement({data:'またのご来店をお待ちしております。\n'});
-            request += builder.createTextElement({data:'数量予約も承っております。\n'});
-            request += builder.createTextElement({data:'お気軽にご連絡ください。\n'});
-            request += builder.createAlignmentElement({position:'left'});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'りんご                                                    \\2,000\n'});
-            request += builder.createTextElement({data:'バナナ                                                    \\3,000\n'});
-            request += builder.createTextElement({data:'ぶどう                                                    \\4,000\n'});
-            request += builder.createTextElement({data:'レモン                                                    \\5,000\n'});
-            request += builder.createTextElement({data:'みかん                                                    \\6,000\n'});
-            request += builder.createTextElement({emphasis:true, data:'小計                                                     \\20,000\n'});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({underline:true, data:'消費税                                                    \\1,000\n'});
-            request += builder.createTextElement({underline:false});
-
-            request += builder.createTextElement({emphasis:true});
-            request += builder.createTextElement({width:2, data:'合計                     \\21,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({emphasis:false});
-
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({data:'お預かり                                                 \\30,000\n'});
-
-            request += builder.createTextElement({width:2, data:'お釣り                    \\9,000\n'});
-            request += builder.createTextElement({width:1});
-            request += builder.createTextElement({data:'\n'});
-
-            request += builder.createTextElement({characterspace:0});
-            break;
-    }
-
-    request += builder.createCutPaperElement({feed:true});
-
-    sendMessage(request);
-}
 function PrintFabSpace(){
     
 	showNowPrinting();
@@ -636,7 +638,7 @@ switch (document.getElementById('paperWidth').value) {
         request += builder.createTextElement({characterspace:1, international:'japan'});
 
         request += builder.createAlignmentElement({position:'right'});
-//        request += builder.createLogoElement({number:1});
+        request += builder.createLogoElement({number:1});
         request += builder.createTextElement({data:'TEL 9999-99-9999\n'});
         request += builder.createAlignmentElement({position:'left'});
 
@@ -777,8 +779,7 @@ window.onload = function() {
                     </dd>
                 </dl>
 
-				<input id="sendBtnAscii" type="button" value="Send (Ascii)" onclick="onSendAscii()" />
-				<input id="sendBtnKanji" type="button" value="Send (Kanji)" onclick="onSendKanji()" />
+				<input id="sendBtnKanji" type="button" value="PrintFabSpace" onclick="PrintFabSpace()" />
 			</footer>
 		</div>
 	</form>
