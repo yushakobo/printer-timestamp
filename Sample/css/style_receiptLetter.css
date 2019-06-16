@@ -6,9 +6,16 @@
  *  by http://ipafont.ipa.go.jp/ipa_font_license_v1.html
  *  Original download URL is http://ipafont.ipa.go.jp/node17#jp
  */
+
+ /**
+ **@font-face {
+ **    font-family: 'IPAexゴシック';
+ **    src: url('../fonts/ipag.ttf');
+ **}
+ **/
+
 @font-face {
-    font-family: 'IPAexゴシック';
-    src: url('../fonts/ipag.ttf');
+	font-family: 'fonts-mplus';
 }
 
 body {
