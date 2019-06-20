@@ -363,6 +363,9 @@ function onDrawText() {
 
         document.getElementById('positionY').value = y + size + 8;
 //      document.getElementById('positionY').value = y + size;
+
+
+    context.fillText(document.getElementById('time').value, x, y);
     }
 }
 
@@ -659,7 +662,7 @@ window.onload = function() {
 				<dl>
 					<dt>Text</dt>
 					<dd>:
-                    <input id='text' type='text' size='30' value='入室時刻 00:00' value+=time() /></dd>
+                    <input id='text' type='text' size='30' value='入室時刻 ' value+=time() /></dd>
 				</dl>
 				<dl>
 					<dt>Data</dt>
@@ -692,7 +695,7 @@ window.onload = function() {
 					<input id="drawBtn" type='button' value='Draw' onclick='onDrawText()' />
 				</div>
 				<div id="drawBtnBlock">
-					<input id="drawBtn" type='button' value='Draw' onclick='onDrawBarcode()' />
+					<input id="drawBtn" type='button' value='DrawBarcode' onclick='onDrawBarcode()' />
 				</div>
 				<div id="clearBtnBlock">
 					<input id="clearBtn" type="button" value="Clear" onclick="onClearCanvas()" />
