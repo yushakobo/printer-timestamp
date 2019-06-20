@@ -364,7 +364,7 @@ function onDrawText() {
         document.getElementById('positionY').value = y + size + 8;
 //      document.getElementById('positionY').value = y + size;
 
-        context.fillText('time()', x, y);
+        context.fillText(time(), x, y);
 
         document.getElementById('positionY').value = y + size + 8;
     }
@@ -663,7 +663,7 @@ function time(){
 				<dl>
 					<dt>Text</dt>
 					<dd>:
-                    <input id='text' type='text' size='30' value='入室時刻'/></dd>
+                    <input id='text' type='text' size='30' value='入室時刻 ' value+=time() /></dd>
 				</dl>
 				<dl>
 					<dt>Data</dt>
