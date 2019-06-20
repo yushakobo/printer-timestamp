@@ -364,8 +364,9 @@ function onDrawText() {
         document.getElementById('positionY').value = y + size + 8;
 //      document.getElementById('positionY').value = y + size;
 
+        context.fillText(time(), x, y);
 
-    context.fillText(document.getElementById('time').value, x, y);
+        document.getElementById('positionY').value = y + size + 8;
     }
 }
 
