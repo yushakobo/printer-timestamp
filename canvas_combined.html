@@ -518,6 +518,10 @@ window.onload = function() {
 	nowLoading();
 	onResizeCanvas();
 }
+function time(){
+    var now = new Date();
+    document.getElementById("time").innerHTML = now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
+}
 // -->
 </script>
 <noscript>
@@ -653,10 +657,6 @@ window.onload = function() {
 					<dd>:<h1 id="time"></h1>
                 <script>
                 time();
-                function time(){
-                    var now = new Date();
-                    document.getElementById("time").innerHTML = now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
-                }
                 setInterval('time()',1000);
                 </script>
                     </dd>
