@@ -553,7 +553,7 @@ window.onload = function() {
 			<div class="wrapper">
 				<div id="canvasBlock">
 					<div id='canvasFrame'>
-						<canvas id='canvasPaper' width='700' height='388'>
+						<canvas id='canvasPaper' width='700' height='1000'>
 							Your browser does not support Canvas!
 						</canvas>
                      </div>
@@ -564,15 +564,7 @@ window.onload = function() {
                     <dt>Symbology</dt>
                     <dd>:
                         <select id='symbology' onchange='onChangeSymbology()'>
-                            <option>UPC-E</option>
-                            <option>UPC-A</option>
-                            <option>JAN/EAN8</option>
                             <option selected='selected'>JAN/EAN13</option>
-                            <option>Code39</option>
-                            <option>ITF</option>
-                            <option>Code128</option>
-                            <option>Code93</option>
-                            <option>NW-7</option>
                         </select>
                     </dd>
                 </dl>
@@ -631,15 +623,6 @@ window.onload = function() {
 					<dd>:
                         <select id='font'>
                             <option selected='selected'>Arial</option>
-                            <option>Cambria</option>
-                            <option>Comic Sans MS</option>
-                            <option>Constantia</option>
-                            <option>Gabriola</option>
-                            <option>Georgia</option>
-                            <option>Segoe UI</option>
-                            <option>Fixedsys</option>
-							<option>MS Serif</option>
-							<option>mplus</option>
                         </select>
     				</dd>
 				</dl>
@@ -655,21 +638,33 @@ window.onload = function() {
 					<dd>:
 						<select id='size'>
 							<option>24</option>
-							<option selected='selected'>32</option>
-							<option>40</option>
+							<optiond>32</option>
+							<option selected='selected'>40</option>
 							<option>48</option>
 						</select>
 					</dd>
-				</dl>
+                </dl>
+				<dl>
+					<dt>Time</dt>
+					<dd>:<h1 id="time"></h1>
+                <script>
+                time();
+                function time(){
+                    var now = new Date();
+                    document.getElementById("time").innerHTML = now.toLocaleTimeString();
+                }
+                setInterval('time()',1000);
+                </script>
+                    </dd>
 				<dl>
 					<dt>Text</dt>
 					<dd>:
-                    <input id='text' type='text' size='30' value='Hello, Star webPRNT.' /></dd>
+                    <input id='text' type='text' size='30' value='入室時刻 00:00' /></dd>
 				</dl>
 				<dl>
 					<dt>Data</dt>
 					<dd>:
-						<input id='data' type='text' size='30' value='012345678901' />
+						<input id='data' type='text' size='30' value='2011000001018' />
                     	<input type='button' value='Example' onclick='onExampleData()' />
                         <div class="note">Hexadecimal:'\x00'-'\xff', HorizontalTab:'\t', LineFeed:'\n', CarriageReturn:'\r', BackSlash:'\\'</div>
 						</dd>
