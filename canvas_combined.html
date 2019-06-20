@@ -560,6 +560,72 @@ window.onload = function() {
 				</div>
 			</div>
 			<div id="optionBlock">
+                <dl>
+                    <dt>Symbology</dt>
+                    <dd>:
+                        <select id='symbology' onchange='onChangeSymbology()'>
+                            <option>UPC-E</option>
+                            <option>UPC-A</option>
+                            <option>JAN/EAN8</option>
+                            <option selected='selected'>JAN/EAN13</option>
+                            <option>Code39</option>
+                            <option>ITF</option>
+                            <option>Code128</option>
+                            <option>Code93</option>
+                            <option>NW-7</option>
+                        </select>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>Module</dt>
+                    <dd>:
+                        <span id="modulebox0">
+                        <select id='module0'>
+                            <option selected='selected'>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                        </select> dots
+                        </span>
+                        <span id="modulebox1" style="display:none;">                        <select id='module1'>
+                            <option selected='selected'>2:6</option>
+                            <option>3:9</option>
+                            <option>4:12</option>
+                            <option>2:5</option>
+                            <option>3:8</option>
+                            <option>4:10</option>
+                            <option>2:4</option>
+                            <option>3:6</option>
+                            <option>4:8</option>
+                        </select> dots
+                        </span>
+                        <span id="modulebox2" style="display:none;">
+                        <select id='module2'>
+                            <option selected='selected'>2:5</option>
+                            <option>4:10</option>
+                            <option>6:15</option>
+                            <option>2:4</option>
+                            <option>4:8</option>
+                            <option>6:12</option>
+                            <option>2:6</option>
+                            <option>3:9</option>
+                            <option>4:12</option>
+                        </select> dots
+                        </span>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>Height</dt>
+                    <dd>:
+                        <select id='height'>
+                            <option>20</option>
+                            <option selected='selected'>40</option>
+                            <option>60</option>
+                            <option>80</option>
+                            <option>100</option>
+                            <option>120</option>
+                        </select> dots
+                    </dd>
+                </dl>
 				<dl>
 					<dt>Font</dt>
 					<dd>:
@@ -573,7 +639,7 @@ window.onload = function() {
                             <option>Segoe UI</option>
                             <option>Fixedsys</option>
 							<option>MS Serif</option>
-							<option>Mplus</option>
+							<option>mplus</option>
                         </select>
     				</dd>
 				</dl>
@@ -648,7 +714,8 @@ window.onload = function() {
 				<input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
 			</footer>
 		</div>
-	</form>
+    </form>
+
 	<form onsubmit='return false;' id="form">
 
 			<div class="container">
@@ -746,22 +813,6 @@ window.onload = function() {
 							<input id='positionY' type='text' size='5' value='0' />
 						</dd>
 					</dl>
-					<dl>
-						<dt>Paper Width</dt>
-						<dd>:
-							<select id='paperWidth' onchange='onResizeCanvas()'>
-								<option value='inch2' selected='selected'>2 Inch</option>
-								<option value='inch3'>3 Inch</option>
-								<option value='inch4'>4 Inch</option>
-							</select>
-						</dd>
-					</dl>
-					<div id="drawBtnBlock">
-						<input id="drawBtn" type='button' value='Draw' onclick='onDrawBarcode()' />
-					</div>
-					<div id="clearBtnBlock">
-						<input id="clearBtn" type="button" value="Clear" onclick="onClearCanvas()" />
-					</div>
 				</div>
 				<hr>
 				<footer>
