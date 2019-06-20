@@ -651,7 +651,7 @@ window.onload = function() {
                 time();
                 function time(){
                     var now = new Date();
-                    document.getElementById("time").innerHTML = now.toLocaleTimeString();
+                    document.getElementById("time").innerHTML = now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
                 }
                 setInterval('time()',1000);
                 </script>
