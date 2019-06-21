@@ -133,7 +133,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         DrawLeftText('Grape');    DrawRightText('$40.00');  cursor += lineSpace;
         DrawLeftText('Lemon');    DrawRightText('$50.00');  cursor += lineSpace;
         DrawLeftText('Orange');   DrawRightText('$60.00');  cursor += lineSpace;
-        DrawLeftText('Subtotal'); DrawRightText(document.getElementById('time').value); cursor += lineSpace;
+        DrawLeftText('Subtotal'); DrawRightText(time()); cursor += lineSpace;
 
         cursor += lineSpace;
 
@@ -476,7 +476,7 @@ window.onload = function() {
 }
 function time(){
     var now = new Date();
-    document.getElementById("time").innerHTML = now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
+    return now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
 }
 // -->
 </script>
