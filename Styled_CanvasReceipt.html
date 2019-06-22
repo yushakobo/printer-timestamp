@@ -139,9 +139,11 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace;
         DrawLeftText('Free Wi-Fi available here!');  cursor += lineSpace;
+        wifilogodrawstart = cursor;
         DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace;
         DrawRightText('yushakobo_5G');cursor += lineSpace;
         cursor += lineSpace;
+
         DrawCenterText('PSK:             ');   DrawRightText('yushawifi');  cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
@@ -158,8 +160,11 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
         image.src = 'img/wifi_available.png' + '?' + new Date().getTime();
 
+        var wifilogoscale = 0.2;
+
         image.onload = function () {
-            context.drawImage(image, canvas.width - image.width * logoScale, 0, image.width * logoScale, image.height * logoScale);
+//            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+            context.drawImage(image, 0 * wifilogoscale, wifilogodrawstart, image.width * wifilogoscale, image.height * wifilogoscale);
         }
 
         image.onerror = function () {
