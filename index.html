@@ -540,6 +540,25 @@ function date(after=0){
 				</div>
 			</div>
 			<div id="optionBlock">
+                    <dl>
+                        <dt>URL</dt>
+                        <dd>:
+                        <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
+                    </dl>
+                    <d1>
+                        <dt>Paper Type</dt>
+                        <dd>:
+                            <select id='papertype'>
+                                <option value='' selected='selected'>-</option>
+                                <option value='normal'>Normal</option>
+                                <option value='black_mark'>Black Mark</option>
+                                <option value='black_mark_and_detect_at_power_on'>Black Mark and Detect at Power On</option>
+                            </select>
+                        </dd>
+                    </dl>
+                    <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
+                    </span>
+                <span style="display: none">
 				<dl>
 					<dt>Font</dt>
 					<dd>:
@@ -557,7 +576,6 @@ function date(after=0){
                         &nbsp;<input id='italic' type='checkbox' onclick='onDrawReceipt()' />Italic
 					</dd>
                 </dl>
-                <span style="display: none">
                     <dl>
                         <dt>Symbology</dt>
                         <dd>:
@@ -640,7 +658,6 @@ function date(after=0){
                             <input id='positionY' type='text' size='5' value='0' />
                         </dd>
                     </dl>
-                </span>
 				<dl>
 					<dt>Paper Width</dt>
 					<dd>:
@@ -657,23 +674,6 @@ function date(after=0){
 			</div>
 			<hr>
 			<footer>
-				<dl>
-					<dt>URL</dt>
-					<dd>:
-                    <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
-				</dl>
-                <d1>
-                    <dt>Paper Type</dt>
-                    <dd>:
-                        <select id='papertype'>
-                            <option value='' selected='selected'>-</option>
-                            <option value='normal'>Normal</option>
-                            <option value='black_mark'>Black Mark</option>
-                            <option value='black_mark_and_detect_at_power_on'>Black Mark and Detect at Power On</option>
-                        </select>
-                    </dd>
-                </dl>
-				<input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
 			</footer>
 		</div>
 	</form>
