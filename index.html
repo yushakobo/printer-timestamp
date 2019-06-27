@@ -92,6 +92,9 @@ function onDrawReceipt() {
 function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
 
+    var EntryTime = '';
+
+
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
 
@@ -106,7 +109,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
         font += fontSize + 'px ';
 
-        font += document.getElementById('font').value;
+        font += 'Arial';
 
         context.font = font;
 
@@ -118,56 +121,82 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
 //      cursor = 0;
         var ClipSpace = 140;
+        var BarcodeDrawStartPosition = ClipSpace + lineSpace * 7;
+        var BarcodeHeight = lineSpace*3;
         cursor = ClipSpace; // クリップボードで挟む部分
         DrawLeftText('ご利用日');  DrawRightText(date()); cursor += lineSpace;
         cursor += lineSpace;
         DrawLeftText("お帰りの際に");  cursor += lineSpace;
         DrawRightText("ご精算をお願いいたします"); cursor += lineSpace;
         cursor += lineSpace;
-        DrawLeftText('入室時刻'); DrawRightText(time()); cursor += lineSpace;
+
+        font = '35px ';
+        font += 'Arial';
+        context.font = font;
+
+        DrawCenterText('入室時刻  '+time()); cursor += lineSpace*1.25;
+
+        font = '';
+        font += fontSize + 'px ';
+        font += 'Arial';
+        context.font = font;
+
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
-        DrawRightText('~'+time(2));  cursor += lineSpace;
+        onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition, BarcodeHeight);
+        DrawCenterText(time(2)+' までのご利用  \¥500-');  cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
-        DrawRightText('~'+time(4));  cursor += lineSpace;
+        onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
+        DrawCenterText(time(4)+' までのご利用 \¥1000-');  cursor += lineSpace;
         cursor += lineSpace;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace;
-        DrawLeftText('Free Wi-Fi available here!');  cursor += lineSpace;
         wifilogodrawstart = cursor;
+        DrawCenterText('Free Wi-Fiを');  cursor += lineSpace;
+        DrawRightText("ご利用いただけます");  cursor += lineSpace;
         DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace;
         DrawRightText('yushakobo_5G');cursor += lineSpace;
-        cursor += lineSpace;
-
         DrawCenterText('PSK:             ');   DrawRightText('yushawifi');  cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
 
-        var BarcodeDrawStartPosition = ClipSpace + lineSpace * 7;
-        var BarcodeHeight = lineSpace*3;
-        onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition, BarcodeHeight);
-        onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
 
 //      alert('Cursor:' + cursor + ', ' + 'Canvas:' + canvas.height);
 
-        var image = new Image();
+        var img_logo = new Image();
 
-        image.src = 'img/wifi_available.png' + '?' + new Date().getTime();
+        img_logo.src = 'img/LOGOout.jpg' + '?' + new Date().getTime();
+
+        var logoscale = 0.8;
+
+        img_logo.onload = function () {
+//            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+            context.drawImage(img_logo, 60 * logoscale, 25 * logoscale, img_logo.width * logoscale, img_logo.height * logoscale);
+        }
+
+        img_logo.onerror = function () {
+            alert('Image file was not able to be loaded.');
+        }
+
+
+        var img_wifi = new Image();
+
+        img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
 
         var wifilogoscale = 0.2;
 
-        image.onload = function () {
+        img_wifi.onload = function () {
 //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
-            context.drawImage(image, 0 * wifilogoscale, wifilogodrawstart, image.width * wifilogoscale, image.height * wifilogoscale);
+            context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
         }
 
-        image.onerror = function () {
+        img_wifi.onerror = function () {
             alert('Image file was not able to be loaded.');
         }
     }
@@ -380,6 +409,19 @@ function refocusWidthSelectbox() {
     paperWidthSelectbox.focus();
 }
 
+function onClearCanvas() {
+    var canvas = document.getElementById('canvasPaper');
+
+    if (canvas.getContext) {
+        var context = canvas.getContext('2d');
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        document.getElementById('positionX').value = 0;
+        document.getElementById('positionY').value = 0;
+    }
+}
+
 function onSendMessage() {
 	showNowPrinting();
 
@@ -489,6 +531,7 @@ window.onload = function() {
 function time(after=0){
     var now = new Date();
     now.setHours(now.getHours() + after);
+    now.setMinutes(now.getMinutes() + 10 - (now.getMinutes() % 5));
     return now.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
 }
 function date(after=0){
@@ -556,8 +599,8 @@ function date(after=0){
                             </select>
                         </dd>
                     </dl>
-                    <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
-                    </span>
+                        <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
+                        <input id="clearBtn" type="button" value="Clear/ReDraw" onclick="onClearCanvas();onDrawReceipt();" />
                 <span style="display: none">
 				<dl>
 					<dt>Font</dt>
@@ -673,8 +716,6 @@ function date(after=0){
 				</div>
 			</div>
 			<hr>
-			<footer>
-			</footer>
 		</div>
 	</form>
 
