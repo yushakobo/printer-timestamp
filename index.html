@@ -129,18 +129,9 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         DrawLeftText("お帰りの際に");  cursor += lineSpace;
         DrawRightText("ご精算をお願いいたします"); cursor += lineSpace;
         cursor += lineSpace;
-
-        font = '35px ';
-        font += 'Arial';
-        context.font = font;
-
+        font = '35px Arial';        context.font = font;
         DrawCenterText('入室時刻  '+time()); cursor += lineSpace*1.25;
-
-        font = '';
-        font += fontSize + 'px ';
-        font += 'Arial';
-        context.font = font;
-
+        font = fontSize + 'px Arial';context.font = font;
         cursor += lineSpace;
         cursor += lineSpace;
         cursor += lineSpace;
@@ -200,6 +191,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             alert('Image file was not able to be loaded.');
         }
     }
+    return Promise.resolve();
 }
 function encodeEscapeSequence(data) {
     var regexp = /\\[tnr\\]/g;
@@ -458,7 +450,7 @@ function onSendMessage() {
 //
 //      msg += 'ResponseText : [ ' + response.responseText + ' ]\n';
 
-        alert(msg);
+    //    alert(msg);
     }
 
     trader.onError = function (response) {
@@ -599,7 +591,8 @@ function date(after=0){
                             </select>
                         </dd>
                     </dl>
-                        <input id="sendBtn" type="button" value="Send" onclick="onClearCanvas();onDrawReceipt();onSendMessage()" />
+                        <input id="sendBtn" type="button" value="Redraw" onclick="onClearCanvas();onDrawReceipt();" />
+                        <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
                 <span style="display: none">
 				<dl>
 					<dt>Font</dt>
@@ -717,10 +710,6 @@ function date(after=0){
 			<hr>
 		</div>
 	</form>
-
-    <div class="to_top">
-        <a href="#global-header">Go to top</a>
-    </div>
 <footer id="global-footer" class="clearfix">
 	<a href="https://www.star-m.jp/starwebprnt-oml.html" target="_blank"><img src="images/footer-logo.png" width="123" alt="" id="footer-logo"></a>
     <img src="images/footer-image.png"height="54" alt=""/>
