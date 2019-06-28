@@ -502,7 +502,7 @@ function onSendMessage() {
     catch (e) {
         hideNowPrinting();
 
-        alert(e.message);
+    //    alert(e.message);
     }
 }
 function nowLoading(){
@@ -599,8 +599,7 @@ function date(after=0){
                             </select>
                         </dd>
                     </dl>
-                        <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
-                        <input id="clearBtn" type="button" value="Clear/ReDraw" onclick="onClearCanvas();onDrawReceipt();" />
+                        <input id="sendBtn" type="button" value="Send" onclick="onClearCanvas();onDrawReceipt();onSendMessage()" />
                 <span style="display: none">
 				<dl>
 					<dt>Font</dt>
