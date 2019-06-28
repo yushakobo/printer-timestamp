@@ -516,7 +516,7 @@ function hideNowPrinting(){
 }
 window.onload = function() {
 	nowLoading();
-	onResizeCanvas();
+    onResizeCanvas();
 }
 function time(){
     var now = new Date();
@@ -663,7 +663,9 @@ function time(){
 				<dl>
 					<dt>Text</dt>
 					<dd>:
-                    <input id='text' type='text' size='30' value='入室時刻 ' value+=time() /></dd>
+                    <input id='text' type='text' size='30' value='入室時刻 ' value+=time() />
+                    <input id='time' type="text" size='30' value=time() style="display:none;"/>
+                    </dd>
 				</dl>
 				<dl>
 					<dt>Data</dt>
