@@ -23,7 +23,7 @@
 <script type='text/javascript' src='js/StarWebPrintTrader.js'></script>
 <script type='text/javascript' src='js/StarBarcodeEncoder.js'></script>
 <script type='text/javascript'>
-<!--
+//<!--
 var cursor         = 0;
 var lineSpace      = 0;
 var leftPosition   = 0;
@@ -92,8 +92,16 @@ function onDrawReceipt() {
 function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
 
-    var EntryTime = '';
+    var EntryTime = new Date();
+//    EntryTime.setHours(17);
+//    EntryTime.setMinutes(01);
+    
+    var StoreCloses = new Date();
+    StoreCloses.setHours(17);
+    StoreCloses.setMinutes(00);
 
+//    var isWifiAvailable = true;
+    var isWifiAvailable = false;
 
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
@@ -107,10 +115,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
         if (document.getElementById('italic').checked) font += 'italic ';
 
-        font += fontSize + 'px ';
-
-        font += 'Arial';
-
+        font += fontSize + 'px Arial';
         context.font = font;
 
         leftPosition   =  0;
@@ -137,25 +142,38 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         cursor += lineSpace;
         cursor += lineSpace;
         onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition, BarcodeHeight);
-        DrawCenterText(time(2)+' までのご利用  \¥500-');  cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
-        DrawCenterText(time(4)+' までのご利用 \¥1000-');  cursor += lineSpace;
+        if(EntryTime.getTime() > StoreCloses.getTime()){
+            DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace;
+        }else{
+            StoreCloses.setHours(15);
+            DrawCenterText(time(2)+' までのご利用  \¥500-');  cursor += lineSpace;
+            cursor += lineSpace;
+            cursor += lineSpace;
+            cursor += lineSpace;
+            cursor += lineSpace;
+            onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
+            if(EntryTime.getTime() < StoreCloses.getTime()){
+                DrawCenterText(time(4)+' までのご利用 \¥1000-');  cursor += lineSpace;
+            }else{
+                DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
+            }
+        }
+
         cursor += lineSpace;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace;
-        wifilogodrawstart = cursor;
-        DrawCenterText('Free Wi-Fiを');  cursor += lineSpace;
-        DrawRightText("ご利用いただけます");  cursor += lineSpace;
-        DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace;
-        DrawRightText('yushakobo_5G');cursor += lineSpace;
-        DrawCenterText('PSK:             ');   DrawRightText('yushawifi');  cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
+        if(isWifiAvailable){
+            wifilogodrawstart = cursor;
+            DrawCenterText('Free Wi-Fiを');  cursor += lineSpace;
+            DrawRightText("ご利用いただけます");  cursor += lineSpace;
+            DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace;
+            DrawRightText('yushakobo_5G');cursor += lineSpace;
+            DrawCenterText('PSK:             ');   DrawRightText('yushawifi');  cursor += lineSpace;
+        }
+
+            cursor += lineSpace;
+            cursor += lineSpace;
+            cursor += lineSpace;
 
 
 //      alert('Cursor:' + cursor + ', ' + 'Canvas:' + canvas.height);
