@@ -100,10 +100,10 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
     var EntryTime = new Date();
     if(mode_test){
-        var hours_test = 13;
+        var hours_test = 10;
         var minutes_test = 15;
         var month_test = 5;
-        var date_test = 1;
+        var date_test = 3;
         EntryTime.setHours(hours_test);
         EntryTime.setMinutes(minutes_test);
         EntryTime.setMonth(month_test);
@@ -161,24 +161,30 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         if(EntryTime.getTime() >= StoreCloses.getTime()){
             DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace;
         }else{
-            StoreCloses.setHours(15);
+//            StoreCloses.setHours(15);
             DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace;
             cursor += lineSpace;
             cursor += lineSpace;
             cursor += lineSpace;
             cursor += lineSpace;
             onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
-            if(EntryTime.getTime() >= StoreCloses.getTime()){
-                DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace;
-                if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked)DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace;
+            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){
+                if(EntryTime.getTime() >= StoreCloses.getTime()){
+                    DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
+                }else{
+                    DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace;
+                    DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace;
+                }
             }else{
                 DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
             }
+            
         }
         cursor += lineSpace;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace;
-        if(isWifiAvailable){
+        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+            var wifilogodrawstart;
             wifilogodrawstart = cursor;
             DrawCenterText('Free Wi-Fiを');  cursor += lineSpace;
             DrawRightText("ご利用いただけます");  cursor += lineSpace;
@@ -208,20 +214,22 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             alert('Image file was not able to be loaded.');
         }
 
+        
+        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+            var img_wifi = new Image();
 
-        var img_wifi = new Image();
+            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
 
-        img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
+            var wifilogoscale = 0.2;
 
-        var wifilogoscale = 0.2;
+            img_wifi.onload = function () {
+    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
+            }
 
-        img_wifi.onload = function () {
-//            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
-            context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
-        }
-
-        img_wifi.onerror = function () {
-            alert('Image file was not able to be loaded.');
+            img_wifi.onerror = function () {
+                alert('Image file was not able to be loaded.');
+            }
         }
     }
 }
@@ -614,6 +622,12 @@ function time(DateTypeObject, after=0){
                     </dd>
                     </dl>
                     <dl>
+                        <dt>Wifi Available</dt>
+                        <dd>:
+                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
+                    </dd>
+                    </d l>
+                    <dl>
                         <dt>URL</dt>
                         <dd>:
                         <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
@@ -754,4 +768,4 @@ function time(DateTypeObject, after=0){
 </footer>
 
 </body>
-</html>
+</
