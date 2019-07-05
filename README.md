@@ -2,4 +2,4 @@
 - aws-cli
 
 ### deploy
-aws s3 sync public s3://yusha-printer-timestamp --delete
+masterブランチの更新を検知して自動的にデプロイされます
