@@ -173,6 +173,11 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                     DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
                 }else{
                     DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace;
+                    cursor += lineSpace;
+                    cursor += lineSpace;
+                    cursor += lineSpace;
+                    cursor += lineSpace;
+                    onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*10, BarcodeHeight);
                     DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace;
                 }
             }else{
@@ -193,8 +198,8 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             DrawCenterText('PSK:             ');   DrawRightText('yushawifi');  cursor += lineSpace;
         }
         cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
+        DrawCenterText('外出の際は                  ');cursor += lineSpace;
+        DrawCenterText('    スタッフにお伝えください');cursor += lineSpace;
 
 
 //      alert('Cursor:' + cursor + ', ' + 'Canvas:' + canvas.height);
@@ -409,19 +414,19 @@ function onResizeCanvas() {
         switch (document.getElementById('paperWidth').value) {
             case 'inch2' :
                 canvas.width = 384;
-                canvas.height = 1000;
+                canvas.height = 1050;
                 break;
             case 'inch3DotImpact' :
                 canvas.width = 576;
-                canvas.height = 1000;
+                canvas.height = 1050;
                 break;
             default :
                 canvas.width = 576;
-                canvas.height = 1000;
+                canvas.height = 1050;
                 break;
             case 'inch4' :
                 canvas.width = 832;
-                canvas.height = 1000;
+                canvas.height = 1050;
                 break;
         }
         document.getElementById('canvasPaper').style.width="700px";
