@@ -92,8 +92,8 @@ function onDrawReceipt() {
 function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
 
-    var isWifiAvailable = true;
-//    var isWifiAvailable = false;
+//    var isWifiAvailable = true;
+    var isWifiAvailable = false;
     
 //    var mode_test = true;
     var mode_test = false;
@@ -629,7 +629,7 @@ function time(DateTypeObject, after=0){
                     <dl>
                         <dt>Wifi Available</dt>
                         <dd>:
-                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
+                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
                     </dd>
                     </d l>
                     <dl>
