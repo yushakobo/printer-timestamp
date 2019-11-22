@@ -72,6 +72,17 @@ function DrawRightText(text) {
     }
 }
 
+function DrawBlankCheckbox(startposition){
+    var canvas = document.getElementById('canvasPaper');
+
+    if(canvas.getContext) {
+        var context = canvas.getContext('2d');
+        
+        context.fillRect(25, startposition+4, 40, 40);
+        context.clearRect(28, startposition+7, 35, 35);
+    }
+}
+
 function onDrawReceipt() {
     switch (document.getElementById('paperWidth').value) {
         case 'inch2' :
@@ -98,6 +109,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 //    var mode_test = true;
     var mode_test = false;
 
+    var CursorLines = 0;
     var EntryTime = new Date();
     if(mode_test){
         var hours_test = 10;
@@ -142,64 +154,75 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
 //      cursor = 0;
         var ClipSpace = 140;
-        var BarcodeDrawStartPosition = ClipSpace + lineSpace * 7;
+        var BarcodeDrawStartPosition = ClipSpace - lineSpace *2;
         var BarcodeHeight = lineSpace*3;
         cursor = ClipSpace; // クリップボードで挟む部分
-        DrawLeftText('ご利用日');  DrawRightText(EntryTime.toLocaleDateString('ja-JP')); cursor += lineSpace;
-        cursor += lineSpace;
-        DrawLeftText("お帰りの際に");  cursor += lineSpace;
-        DrawRightText("ご精算をお願いいたします"); cursor += lineSpace;
-        cursor += lineSpace;
+        DrawLeftText('ご利用日');  DrawRightText(EntryTime.toLocaleDateString('ja-JP')); cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        DrawLeftText("お帰りの際に");  cursor += lineSpace; CursorLines++;
+        DrawRightText("ご精算をお願いいたします"); cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
         font = '35px Arial';        context.font = font;
         DrawCenterText('入室時刻  '+ time(EntryTime,0)); cursor += lineSpace*1.25;
         font = fontSize + 'px Arial';context.font = font;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        cursor += lineSpace;
-        onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition, BarcodeHeight);
+        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
         if(EntryTime.getTime() >= StoreCloses.getTime()){
-            DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace;
+            DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace; CursorLines++;
         }else{
 //            StoreCloses.setHours(15);
-            DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace;
-            cursor += lineSpace;
-            cursor += lineSpace;
-            cursor += lineSpace;
-            cursor += lineSpace;
-            onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*5, BarcodeHeight);
+            DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
             if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){
                 if(EntryTime.getTime() >= StoreCloses.getTime()){
-                    DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
+                    DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
                 }else{
-                    DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace;
-                    cursor += lineSpace;
-                    cursor += lineSpace;
-                    cursor += lineSpace;
-                    cursor += lineSpace;
-                    onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*10, BarcodeHeight);
-                    DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace;
+                    DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
+                    cursor += lineSpace; CursorLines++;
+                    cursor += lineSpace; CursorLines++;
+                    cursor += lineSpace; CursorLines++;
+                    cursor += lineSpace; CursorLines++;
+                    onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+                    DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace; CursorLines++;
                 }
             }else{
-                DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace;
+                DrawCenterText('以降19:00まで \¥1000-');  cursor += lineSpace; CursorLines++;
             }
             
         }
-        cursor += lineSpace;
+        cursor += lineSpace; CursorLines++;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
-        cursor += lineSpace;
-        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
-            var wifilogodrawstart;
-            wifilogodrawstart = cursor;
-            DrawCenterText('Free Wi-Fiを');  cursor += lineSpace;
-            DrawRightText("ご利用いただけます");  cursor += lineSpace;
-            DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace;
-//            DrawRightText('yushakobo_5G');cursor += lineSpace;
-            DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace;
-        }
-        cursor += lineSpace;
-        DrawCenterText('外出の際は                  ');cursor += lineSpace;
-        DrawCenterText('    スタッフにお伝えください');cursor += lineSpace;
+        cursor += lineSpace; CursorLines++;
+//        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+//            var wifilogodrawstart;
+//            wifilogodrawstart = cursor;
+//            DrawCenterText('Free Wi-Fiを');  cursor += lineSpace; CursorLines++;
+//            DrawRightText("ご利用いただけます");  cursor += lineSpace; CursorLines++;
+//            DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace; CursorLines++;
+////            DrawRightText('yushakobo_5G');cursor += lineSpace; CursorLines++;
+//            DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace; CursorLines++;
+//        }
+        // レジンキーキャップ作成可否の条件振り
+        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+        onDrawBarcode('2011000005016',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+        DrawBlankCheckbox(cursor)
+        DrawCenterText('    レジンキーキャップ');cursor += lineSpace; CursorLines++;
+        DrawCenterText('    作成キット    \¥500-');cursor += lineSpace; CursorLines++;
+        // レジンキーキャップ作成可否の条件振りここまで
+          // レジンキーキャップ作成可否の条件振りチェックボックスを作る
+
+        cursor += lineSpace; CursorLines++;
+        DrawCenterText('外出の際は                  ');cursor += lineSpace; CursorLines++;
+        DrawCenterText('    スタッフにお伝えください');cursor += lineSpace; CursorLines++;
 
 
 //      alert('Cursor:' + cursor + ', ' + 'Canvas:' + canvas.height);
@@ -220,24 +243,25 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         }
 
         
-        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
-            var img_wifi = new Image();
-
-            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
-
-            var wifilogoscale = 0.2;
-
-            img_wifi.onload = function () {
-    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
-                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
-            }
-
-            img_wifi.onerror = function () {
-                alert('Image file was not able to be loaded.');
-            }
-        }
+//        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+//            var img_wifi = new Image();
+//
+//            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
+//
+//            var wifilogoscale = 0.2;
+//
+//            img_wifi.onload = function () {
+//    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+//                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
+//            }
+//
+//            img_wifi.onerror = function () {
+//                alert('Image file was not able to be loaded.');
+//            }
+//        }
     }
 }
+
 function encodeEscapeSequence(data) {
     var regexp = /\\[tnr\\]/g;
 
@@ -629,7 +653,7 @@ function time(DateTypeObject, after=0){
                     <dl>
                         <dt>Wifi Available</dt>
                         <dd>:
-                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
+                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
                     </dd>
                     </d l>
                     <dl>
