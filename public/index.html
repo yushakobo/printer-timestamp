@@ -103,15 +103,27 @@ function onDrawReceipt() {
 function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
 
+//    var isResinUVAvailable = true;
+    var isResinUVAvailable = false;
+
 //    var isWifiAvailable = true;
     var isWifiAvailable = false;
     
 //    var mode_test = true;
     var mode_test = false;
 
+    var BarcodeNumbers = 0;
+
     var CursorLines = 0;
     var EntryTime = new Date();
     if(mode_test){
+//            June 2019     
+//    Mo Tu We Th Fr Sa Su
+//                    1  2
+//     3  4  5  6  7  8  9
+//    10 11 12 13 14 15 16
+//    17 18 19 20 21 22 23
+//    24 25 26 27 28 29 30
         var hours_test = 10;
         var minutes_test = 15;
         var month_test = 5;
@@ -170,8 +182,10 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
         onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
+        BarcodeNumbers++;
         if(EntryTime.getTime() >= StoreCloses.getTime()){
             DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace; CursorLines++;
+            
         }else{
 //            StoreCloses.setHours(15);
             DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
@@ -180,6 +194,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;
             onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+            BarcodeNumbers++;
             if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){
                 if(EntryTime.getTime() >= StoreCloses.getTime()){
                     DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
@@ -190,6 +205,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                     cursor += lineSpace; CursorLines++;
                     cursor += lineSpace; CursorLines++;
                     onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+                    BarcodeNumbers++;
                     DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace; CursorLines++;
                 }
             }else{
@@ -200,26 +216,35 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         cursor += lineSpace; CursorLines++;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace; CursorLines++;
-//        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
-//            var wifilogodrawstart;
-//            wifilogodrawstart = cursor;
-//            DrawCenterText('Free Wi-Fiを');  cursor += lineSpace; CursorLines++;
-//            DrawRightText("ご利用いただけます");  cursor += lineSpace; CursorLines++;
-//            DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace; CursorLines++;
-////            DrawRightText('yushakobo_5G');cursor += lineSpace; CursorLines++;
-//            DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace; CursorLines++;
-//        }
-        // レジンキーキャップ作成可否の条件振り
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        onDrawBarcode('2011000005016',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
-        DrawBlankCheckbox(cursor)
-        DrawCenterText('    レジンキーキャップ');cursor += lineSpace; CursorLines++;
-        DrawCenterText('    作成キット    \¥500-');cursor += lineSpace; CursorLines++;
-        // レジンキーキャップ作成可否の条件振りここまで
-          // レジンキーキャップ作成可否の条件振りチェックボックスを作る
-
+        if(isResinUVAvailable | document.getElementById('ResinUV').checked){
+            // レジンキーキャップ作成可否の条件振り
+            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;
+            onDrawBarcode('2011000005016',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+            DrawBlankCheckbox(cursor)
+            DrawCenterText('    レジンキーキャップ');cursor += lineSpace; CursorLines++;
+            DrawCenterText('    作成キット    \¥500-');cursor += lineSpace; CursorLines++;
+            // レジンキーキャップ作成可否の条件振りここまで
+            if(BarcodeNumbers < 3 && document.getElementById('wifi_availability').checked){
+                cursor += lineSpace; CursorLines++;
+                var wifilogodrawstart;
+                wifilogodrawstart = cursor;
+                DrawCenterText('Free Wi-Fiを');  cursor += lineSpace; CursorLines++;
+                DrawRightText("ご利用いただけます");  cursor += lineSpace; CursorLines++;
+                DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace; CursorLines++;
+                DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace; CursorLines++;
+            }
+        }else{
+            if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+                var wifilogodrawstart;
+                wifilogodrawstart = cursor;
+                DrawCenterText('Free Wi-Fiを');  cursor += lineSpace; CursorLines++;
+                DrawRightText("ご利用いただけます");  cursor += lineSpace; CursorLines++;
+                DrawCenterText('SSID:             ');    DrawRightText('yushakobo');  cursor += lineSpace; CursorLines++;
+                DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace; CursorLines++;
+            }
+        }
         cursor += lineSpace; CursorLines++;
         DrawCenterText('外出の際は                  ');cursor += lineSpace; CursorLines++;
         DrawCenterText('    スタッフにお伝えください');cursor += lineSpace; CursorLines++;
@@ -243,22 +268,22 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         }
 
         
-//        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
-//            var img_wifi = new Image();
-//
-//            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
-//
-//            var wifilogoscale = 0.2;
-//
-//            img_wifi.onload = function () {
-//    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
-//                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
-//            }
-//
-//            img_wifi.onerror = function () {
-//                alert('Image file was not able to be loaded.');
-//            }
-//        }
+        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
+            var img_wifi = new Image();
+
+            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
+
+            var wifilogoscale = 0.2;
+
+            img_wifi.onload = function () {
+    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
+            }
+
+            img_wifi.onerror = function () {
+                alert('Image file was not able to be loaded.');
+            }
+        }
     }
 }
 
@@ -651,11 +676,17 @@ function time(DateTypeObject, after=0){
                     </dd>
                     </dl>
                     <dl>
-                        <dt>Wifi Available</dt>
+                        <dt>UVResin</dt>
                         <dd>:
-                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
+                        <input id='ResinUV' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
                     </dd>
-                    </d l>
+                    </dl>
+                    <dl>
+                        <dt>Wifi</dt>
+                        <dd>:
+                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
+                    </dd>
+                    </dl>
                     <dl>
                         <dt>URL</dt>
                         <dd>:
