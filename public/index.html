@@ -136,12 +136,15 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     EntryTime.setMinutes(EntryTime.getMinutes() + 5);
     
     var StoreCloses = new Date();
-    StoreCloses.setHours(17);
-    StoreCloses.setMinutes(00); 
+    //閉店時間-2の値、条件分岐に使う
+    StoreCloses.setHours(16);//18:00閉店、COVID-19制限営業対応
+    StoreCloses.setMinutes(00);
     if(mode_test){
         StoreCloses.setMonth(month_test);
         StoreCloses.setDate(date_test);
     }
+//  //閉店時刻、印刷される文字列
+    var StoreCloseText = (StoreCloses.getHours()+2)+":00";
 
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
@@ -167,7 +170,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 //      cursor = 0;
         var ClipSpace = 140;
         var BarcodeDrawStartPosition = ClipSpace - lineSpace *2;
-        var BarcodeHeight = lineSpace*3;
+        var BarcodeHeight = lineSpace *3;
         cursor = ClipSpace; // クリップボードで挟む部分
         DrawLeftText('ご利用日');  DrawRightText(EntryTime.toLocaleDateString('ja-JP')); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
@@ -177,47 +180,46 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         font = '35px Arial';        context.font = font;
         DrawCenterText('入室時刻  '+ time(EntryTime,0)); cursor += lineSpace*1.25;
         font = fontSize + 'px Arial';context.font = font;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;//
+        cursor += lineSpace; CursorLines++;// バーコード用スペース
+        cursor += lineSpace; CursorLines++;//
+        cursor += lineSpace; CursorLines++;//
         onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
         BarcodeNumbers++;
-        if(EntryTime.getTime() >= StoreCloses.getTime()){
-            DrawCenterText('19:00 までのご利用 \¥500-');  cursor += lineSpace; CursorLines++;
+        if(EntryTime.getTime() >= StoreCloses.getTime()){//閉店時刻-2時間での入室かどうか
+            DrawCenterText(StoreCloseText+' までのご利用 \¥500-');  cursor += lineSpace; CursorLines++;
             
         }else{
 //            StoreCloses.setHours(15);
             DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;
+            cursor += lineSpace; CursorLines++;//
+            cursor += lineSpace; CursorLines++;// バーコード用スペース
+            cursor += lineSpace; CursorLines++;//
+            cursor += lineSpace; CursorLines++;//
             onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
             BarcodeNumbers++;
-            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){
-                if(EntryTime.getTime() >= StoreCloses.getTime()){
-                    DrawCenterText('19:00 までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
-                }else{
+            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){//土曜か日曜、祝日チェックボックスにチェックが入っているかどうか
+                if(EntryTime.getTime() >= StoreCloses.getTime()){//土日祝日で、閉店時間-4時間でないかどうか
+                    DrawCenterText(StoreCloseText+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
+                }else{//土日祝日で閉店まで4時間以上ある場合
                     DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
-                    cursor += lineSpace; CursorLines++;
-                    cursor += lineSpace; CursorLines++;
-                    cursor += lineSpace; CursorLines++;
-                    cursor += lineSpace; CursorLines++;
+                    cursor += lineSpace; CursorLines++;//
+                    cursor += lineSpace; CursorLines++;// バーコード用スペース
+                    cursor += lineSpace; CursorLines++;//
+                    cursor += lineSpace; CursorLines++;//
                     onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
                     BarcodeNumbers++;
-                    DrawCenterText('以降19:00まで \¥1500-');cursor += lineSpace; CursorLines++;
+                    DrawCenterText('以降'+StoreCloseText+'まで \¥1500-');cursor += lineSpace; CursorLines++;
                 }
             }else{
-                DrawCenterText('以降19:00まで \¥1000-');  cursor += lineSpace; CursorLines++;
+                DrawCenterText('以降'+StoreCloseText+'まで \¥1000-');  cursor += lineSpace; CursorLines++;
             }
             
         }
         cursor += lineSpace; CursorLines++;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace; CursorLines++;
-        if(isResinUVAvailable | document.getElementById('ResinUV').checked){
-            // レジンキーキャップ作成可否の条件振り
+        if(isResinUVAvailable | document.getElementById('ResinUV').checked){// レジンキーキャップ作成可否の条件振り
             cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;
