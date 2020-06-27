@@ -178,7 +178,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         DrawRightText("ご精算をお願いいたします"); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
         font = '35px Arial';        context.font = font;
-        DrawCenterText('入室時刻  '+ time(EntryTime,0)); cursor += lineSpace*1.25;
+        DrawCenterText('入室時刻  '+ TimeAfter(EntryTime,0)); cursor += lineSpace*1.25;
         font = fontSize + 'px Arial';context.font = font;
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;// バーコード用スペース
@@ -191,7 +191,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             
         }else{
 //            StoreCloses.setHours(15);
-            DrawCenterText(time(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
+            DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;//
             cursor += lineSpace; CursorLines++;// バーコード用スペース
             cursor += lineSpace; CursorLines++;//
@@ -202,7 +202,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                 if(EntryTime.getTime() >= StoreCloses.getTime()){//土日祝日で、閉店時間-4時間でないかどうか
                     DrawCenterText(StoreCloseText+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
                 }else{//土日祝日で閉店まで4時間以上ある場合
-                    DrawCenterText(time(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
+                    DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
                     cursor += lineSpace; CursorLines++;//
                     cursor += lineSpace; CursorLines++;// バーコード用スペース
                     cursor += lineSpace; CursorLines++;//
@@ -616,7 +616,8 @@ window.onload = function() {
 	nowLoading();
 	onResizeCanvas();
 }
-function time(DateTypeObject, after=0){
+function TimeAfter(DateTypeObject, after=0){
+    //処理の都合上+2時間するための関数
 //    var now = new Date();
     DateTypeObject.setHours(DateTypeObject.getHours() + after);
 //    DateTypeObject.setMinutes(DateTypeObject.getMinutes() + 10 - (DateTypeObject.getMinutes() % 5));
@@ -689,11 +690,12 @@ function time(DateTypeObject, after=0){
                         <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
                     </dd>
                     </dl>
-                    <dl>
-                        <dt>URL</dt>
-                        <dd>:
-                        <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
-                    </dl>
+                    <span style="display: none;">
+                        <dl>
+                            <dt>URL</dt>
+                            <dd>:
+                            <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
+                        </dl>
                     <d1>
                         <dt>Paper Type</dt>
                         <dd>:
@@ -705,6 +707,7 @@ function time(DateTypeObject, after=0){
                             </select>
                         </dd>
                     </dl>
+                    </span>
                         <input id="sendBtn" type="button" value="Redraw" onclick="onClearCanvas();onDrawReceipt();" />
                         <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
                 <span style="display: none">
