@@ -137,14 +137,18 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     
     var StoreCloses = new Date();
     //閉店時間-2の値、条件分岐に使う
-    StoreCloses.setHours(16);//18:00閉店、COVID-19制限営業対応
-    StoreCloses.setMinutes(00);
+//    StoreCloses.setHours(16);//18:00閉店、COVID-19制限営業対応
+//    StoreCloses.setMinutes(00);
+    //ページから取得する
+    StoreCloses.setHours(document.getElementById("StoreClosesInHtmlHour").value-2);
+    StoreCloses.setMinutes(document.getElementById("StoreClosesInHtmlMinute").value);
     if(mode_test){
         StoreCloses.setMonth(month_test);
         StoreCloses.setDate(date_test);
     }
 //  //閉店時刻、印刷される文字列
-    var StoreCloseText = (StoreCloses.getHours()+2)+":00";
+//    var StoreCloseText = (StoreCloses.getHours()+2)+":00";
+    var StoreCloseText = (StoreCloses.getHours()+2)+":"+String(StoreCloses.getMinutes()).padStart(2, '0');
 
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
@@ -690,13 +694,38 @@ function TimeAfter(DateTypeObject, after=0){
                         <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
                     </dd>
                     </dl>
+                    <!--閉店時間の設定-->
+                    <dl>
+                        <dt>Close</dt>
+                        <dd>:
+                                <select name="closing hour" id="StoreClosesInHtmlHour">
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18" selected="selected">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <select name="closing minute" id="StoreClosesInHtmlMinute">
+                                    <option value="00" selected="selected">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                        </dd>
+                    </dl>
                     <span style="display: none;">
                         <dl>
                             <dt>URL</dt>
                             <dd>:
                             <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
                         </dl>
-                    <d1>
+                    <dl>
                         <dt>Paper Type</dt>
                         <dd>:
                             <select id='papertype'>
