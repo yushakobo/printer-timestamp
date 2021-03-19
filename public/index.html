@@ -110,45 +110,44 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var isWifiAvailable = false;
     
 //    var mode_test = true;
-    var mode_test = false;
+    var mode_test = false;// テストモードのオンオフ 曜日や祝日、時刻を変えた場合の挙動を見るときに使う
 
-    var BarcodeNumbers = 0;
+    var BarcodeNumbers = 0;// 表示するバーコードの数 表示できる数に上限があるので表示するものとしないものを分けるときに使う
 
     var CursorLines = 0;
-    var EntryTime = new Date();
-    if(mode_test){
-//            June 2019     
-//    Mo Tu We Th Fr Sa Su
-//                    1  2
-//     3  4  5  6  7  8  9
-//    10 11 12 13 14 15 16
-//    17 18 19 20 21 22 23
-//    24 25 26 27 28 29 30
-        var hours_test = 10;
-        var minutes_test = 15;
-        var month_test = 5;
-        var date_test = 3;
-        EntryTime.setHours(hours_test);
-        EntryTime.setMinutes(minutes_test);
-        EntryTime.setMonth(month_test);
-        EntryTime.setDate(date_test);
-    }
-    EntryTime.setMinutes(EntryTime.getMinutes() + 5);
+    let EntryTime = new Date();// ご利用日時を取得
+
+    EntryTime.setMinutes(EntryTime.getMinutes() + 5); //受付後、作業を始めるまでのタイムラグを考慮
+
+    let BarcodeBasic2hours = '2020000005018'; // 基本2時間のインストアJAN
+    let BarcodeAddon1hour = '2020000005025'; // 追加一時間のインストアJAN
+    let BarcodePaidDesolderer = '2020000006015'; // 有料工具のインストアJAN
+    let BarcodePaidSupport = '2020000007012'; // 有償サポートのインストアJAN
     
-    var StoreCloses = new Date();
-    //閉店時間-2の値、条件分岐に使う
-//    StoreCloses.setHours(16);//18:00閉店、COVID-19制限営業対応
-//    StoreCloses.setMinutes(00);
-    //ページから取得する
-    StoreCloses.setHours(document.getElementById("StoreClosesInHtmlHour").value-2);
-    StoreCloses.setMinutes(document.getElementById("StoreClosesInHtmlMinute").value);
-    if(mode_test){
-        StoreCloses.setMonth(month_test);
-        StoreCloses.setDate(date_test);
+    let StoreCloses = new Date(); // 閉店時間を設定する変数
+    if(mode_test | document.getElementById("mode_test").checked){
+        let ModeTestTime =  new Date();
+//        EntryTime.setDate(document.getElementById("TestModeDate").value);
+//        EntryTime.setTime(document.getElementById("TestModeTime").value);
+//        StoreCloses.setDate(document.getElementById("TestModeDate").value);
+        ModeTestTime.setDate(document.getElementById("TestModeDate").value);
+        ModeTestTime.setTime(document.getElementById("TestModeTime").value);
+//        let hours_test = 10;
+//        let minutes_test = 15;
+//        let month_test = 5;
+//        let date_test = 3;
+//        EntryTime.setHours(hours_test);
+//        EntryTime.setMinutes(minutes_test);
+//        EntryTime.setMonth(month_test);
+//        EntryTime = ModeTestTime;
+//        StoreCloses.setMonth(ModeTestTime.getMonth);
+        StoreCloses.setDate(ModeTestTime.getDate.value);
     }
-//  //閉店時刻、印刷される文字列
-//    var StoreCloseText = (StoreCloses.getHours()+2)+":00";
-    var StoreCloseText = (StoreCloses.getHours()+2)+":"+String(StoreCloses.getMinutes()).padStart(2, '0');
+    //ページから取得する
+//    StoreCloses.setHours(document.getElementById("StoreClosesInHtmlHour").value-2);
+//    StoreCloses.setMinutes(document.getElementById("StoreClosesInHtmlMinute").value);
+    StoreCloses.setTime(document.getElementById("StoreClosesInHtml").value);
+    let StoreCloseText = (StoreCloses.getHours()+2)+":"+String(StoreCloses.getMinutes()).padStart(2, '0');
 
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
@@ -158,7 +157,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 //      context.textAlign    = 'start';
         context.textBaseline = 'top';
 
-        var font = '';
+        let font = '';
 
 //        if (document.getElementById('italic').checked) font += 'italic ';
 
@@ -166,9 +165,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         context.font = font;
 
         leftPosition   =  0;
-//      centerPosition =  canvas.width       / 2;
         centerPosition = (canvas.width - 16) / 2;
-//      rightPosition  =  canvas.width;
         rightPosition  = (canvas.width - 16);
 
 //      cursor = 0;
@@ -176,31 +173,25 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         var BarcodeDrawStartPosition = ClipSpace - lineSpace *2;
         var BarcodeHeight = lineSpace *3;
         cursor = ClipSpace; // クリップボードで挟む部分
-        DrawLeftText('ご利用日');  DrawRightText(EntryTime.toLocaleDateString('ja-JP')); cursor += lineSpace; CursorLines++;
+        DrawCenterText('入室日時'+" "+EntryTime.toLocaleDateString('ja-JP')+" "+TimeAfter(EntryTime,0)); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
-        DrawLeftText("お帰りの際に");  cursor += lineSpace; CursorLines++;
-        DrawRightText("ご精算をお願いいたします"); cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        font = '35px Arial';        context.font = font;
-        DrawCenterText('入室時刻  '+ TimeAfter(EntryTime,0)); cursor += lineSpace*1.25;
-        font = fontSize + 'px Arial';context.font = font;
+        DrawCenterText("ご精算は退出時に");  cursor += lineSpace*1.25;
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;// バーコード用スペース
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;//
-        onDrawBarcode('2011000001018',50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
+        onDrawBarcode(BarcodeBasic2hours,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
         BarcodeNumbers++;
         if(EntryTime.getTime() >= StoreCloses.getTime()){//閉店時刻-2時間での入室かどうか
-            DrawCenterText(StoreCloseText+' までのご利用 \¥500-');  cursor += lineSpace; CursorLines++;
+            DrawCenterText(StoreCloseText+' までのご利用 \¥1500-');  cursor += lineSpace; CursorLines++;
             
         }else{
-//            StoreCloses.setHours(15);
-            DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用  \¥500-');  cursor += lineSpace; CursorLines++;
+            DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用  \¥1500-');  cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;//
             cursor += lineSpace; CursorLines++;// バーコード用スペース
             cursor += lineSpace; CursorLines++;//
             cursor += lineSpace; CursorLines++;//
-            onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+            onDrawBarcode(BarcodeAddon1hour,50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
             BarcodeNumbers++;
             if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){//土曜か日曜、祝日チェックボックスにチェックが入っているかどうか
                 if(EntryTime.getTime() >= StoreCloses.getTime()){//土日祝日で、閉店時間-4時間でないかどうか
@@ -211,7 +202,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                     cursor += lineSpace; CursorLines++;// バーコード用スペース
                     cursor += lineSpace; CursorLines++;//
                     cursor += lineSpace; CursorLines++;//
-                    onDrawBarcode('2011000001025',50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
+                    onDrawBarcode(BarcodeAddon1hour,50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
                     BarcodeNumbers++;
                     DrawCenterText('以降'+StoreCloseText+'まで \¥1500-');cursor += lineSpace; CursorLines++;
                 }
@@ -223,7 +214,8 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         cursor += lineSpace; CursorLines++;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
         cursor += lineSpace; CursorLines++;
-        if(isResinUVAvailable | document.getElementById('ResinUV').checked){// レジンキーキャップ作成可否の条件振り
+
+        /*if(isResinUVAvailable | document.getElementById('ResinUV').checked){// レジンキーキャップ作成可否の条件振り
             cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;
             cursor += lineSpace; CursorLines++;
@@ -251,10 +243,10 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                 DrawCenterText('PSK:             ');   DrawRightText('yusha-wifi');  cursor += lineSpace; CursorLines++;
             }
         }
+        */
         cursor += lineSpace; CursorLines++;
-        DrawCenterText('外出の際は                  ');cursor += lineSpace; CursorLines++;
-        DrawCenterText('    スタッフにお伝えください');cursor += lineSpace; CursorLines++;
-
+//        DrawCenterText('外出の際は                  ');cursor += lineSpace; CursorLines++;
+//        DrawCenterText('    スタッフにお伝えください');cursor += lineSpace; CursorLines++;
 
 //      alert('Cursor:' + cursor + ', ' + 'Canvas:' + canvas.height);
 
@@ -594,7 +586,7 @@ function onSendMessage() {
     catch (e) {
         hideNowPrinting();
 
-    //    alert(e.message);
+        alert(e.message);
     }
 }
 function nowLoading(){
@@ -627,11 +619,6 @@ function TimeAfter(DateTypeObject, after=0){
 //    DateTypeObject.setMinutes(DateTypeObject.getMinutes() + 10 - (DateTypeObject.getMinutes() % 5));
     return DateTypeObject.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
 }
-//  function date(after=0){
-//      var now = new Date();
-//      return now.toLocaleDateString('ja-JP');
-//  }
-// -->
 </script>
 <noscript>
     Your browser does not support JavaScript!
@@ -677,24 +664,30 @@ function TimeAfter(DateTypeObject, after=0){
 			</div>
 			<div id="optionBlock">
                     <dl>
-                        <dt>Holiday</dt>
-                        <dd>:
-                        <input id='holiday' type='checkbox' onclick='onDrawReceipt()' />
-                    </dd>
+                            <dt>Holiday</dt>
+                            <dd>:
+                            <input id='holiday' type='checkbox' onclick='onDrawReceipt()' />
+                        </dd>
                     </dl>
                     <dl>
                         <dt>UVResin</dt>
                         <dd>:
-                        <input id='ResinUV' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
+                        <input id='ResinUV' type='checkbox' onclick='onDrawReceipt()' />
                     </dd>
                     </dl>
                     <dl>
                         <dt>Wifi</dt>
                         <dd>:
-                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' checked='checked'/>
+                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
                     </dd>
                     </dl>
                     <!--閉店時間の設定-->
+                    <dl>
+                        <dt>Test Time</dt>
+                        <dd>:
+                            <input type="time" name="closingtime" id="StoreClosesInHtml" value="18:00">
+                        </dd>
+                    </dl><!--
                     <dl>
                         <dt>Close</dt>
                         <dd>:
@@ -718,7 +711,28 @@ function TimeAfter(DateTypeObject, after=0){
                                     <option value="45">45</option>
                                 </select>
                         </dd>
+                    </dl>-->
+                    <!-- 閉店時間の設定ここまで-->
+                    <!-- 現在時刻の設定(テストモード) -->
+                    <dl>
+                        <dt>Test Mode</dt>
+                        <dd>:
+                            <input id='mode_test' type='checkbox' onclick='onDrawReceipt()' />
+                        </dd>
                     </dl>
+                    <dl>
+                        <dt>Test Date</dt>
+                        <dd>:
+                            <input type="date" name=testmodedate id="TestModeDate" value="2020-02-21">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>Test Time</dt>
+                        <dd>:
+                            <input type="time" name="testmodetime" id="TestModeTime" value="10:23">
+                        </dd>
+                    </dl>
+                    <!-- 現在時刻の設定(テストモード) -->
                     <span style="display: none;">
                         <dl>
                             <dt>URL</dt>
