@@ -193,7 +193,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             cursor += lineSpace; CursorLines++;//
             onDrawBarcode(BarcodeAddon1hour,50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
             BarcodeNumbers++;
-            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){//土曜か日曜、祝日チェックボックスにチェックが入っているかどうか
+/*            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){//土曜か日曜、祝日チェックボックスにチェックが入っているかどうか
                 if(EntryTime.getTime() >= StoreCloses.getTime()){//土日祝日で、閉店時間-4時間でないかどうか
                     DrawCenterText(StoreCloseText+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
                 }else{//土日祝日で閉店まで4時間以上ある場合
@@ -201,9 +201,11 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
                     DrawCenterText('以降1時間ごとに +\¥500-');cursor += lineSpace; CursorLines++;
                 }
             }else{
+*/   
                 DrawCenterText('以降1時間ごとに +\¥500-');  cursor += lineSpace; CursorLines++;
+/*
             }
-            
+*/            
         }
         cursor += lineSpace; CursorLines++;
         context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
