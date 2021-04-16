@@ -104,17 +104,17 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
 
 //    var isResinUVAvailable = true;
-    var isResinUVAvailable = false;
+    let isResinUVAvailable = false;
 
 //    var isWifiAvailable = true;
-    var isWifiAvailable = false;
+    let isWifiAvailable = false;
     
 //    var mode_test = true;
-    var mode_test = false;// テストモードのオンオフ 曜日や祝日、時刻を変えた場合の挙動を見るときに使う
+    let mode_test = false;// テストモードのオンオフ 曜日や祝日、時刻を変えた場合の挙動を見るときに使う
 
-    var BarcodeNumbers = 0;// 表示するバーコードの数 表示できる数に上限があるので表示するものとしないものを分けるときに使う
+    let BarcodeNumbers = 0;// 表示するバーコードの数 表示できる数に上限があるので表示するものとしないものを分けるときに使う
 
-    var CursorLines = 0;
+    let CursorLines = 0;
     let EntryTime = new Date();// ご利用日時を取得
 
     EntryTime.setMinutes(EntryTime.getMinutes() + 5); //受付後、作業を始めるまでのタイムラグを考慮
