@@ -121,7 +121,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
     let BarcodeBasic2hours = '2020000005018'; // 基本2時間のインストアJAN
     let BarcodeAddon1hour = '2020000005025'; // 追加一時間のインストアJAN
-    let BarcodePaidDesolderer = '2020000006015'; // 有料工具のインストアJAN
+    let BarcodePaidDesolderer = '2400000080459'; // 有償工具貸し出しのインストアJAN
     let BarcodePaidSupport = '2020000007012'; // 有償サポートのインストアJAN
     
     let StoreCloses = new Date(); // 閉店時間を設定する変数
@@ -175,7 +175,9 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         cursor = ClipSpace; // クリップボードで挟む部分
         DrawCenterText('入室日時'+" "+EntryTime.toLocaleDateString('ja-JP')+" "+TimeAfter(EntryTime,0)); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
-        DrawCenterText("ご精算は退出時に");  cursor += lineSpace*1.25;
+        DrawCenterText("ご精算は退出時に");cursor += lineSpace; CursorLines++;
+        DrawCenterText("水～金,日：13～18時");cursor += lineSpace; CursorLines++;
+        DrawCenterText("土：11～18時");  cursor += lineSpace*1.25;
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;// バーコード用スペース
         cursor += lineSpace; CursorLines++;//
@@ -216,8 +218,8 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         onDrawBarcode(BarcodePaidDesolderer,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
         BarcodeNumbers++;
         //    DrawBlankCheckbox(cursor)
-            DrawCenterText('          電動はんだ吸取機');cursor += lineSpace; CursorLines++;
-            DrawCenterText('  ____回 貸出      1回 \¥1000-');cursor += lineSpace; CursorLines++;
+            DrawRightText('有償工具貸し出し　');cursor += lineSpace; CursorLines++;
+            DrawCenterText('□                   \¥1500-');cursor += lineSpace; CursorLines++;
 
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;// バーコード用スペース
@@ -226,8 +228,8 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         onDrawBarcode(BarcodePaidSupport,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
         BarcodeNumbers++;
         //    DrawBlankCheckbox(cursor)
-            DrawCenterText('           有償技術サポート');cursor += lineSpace; CursorLines++;
-            DrawCenterText('  ____回       1回30分 \¥3000-');cursor += lineSpace; CursorLines++;
+            DrawRightText('有償技術サポート(30分)　');cursor += lineSpace; CursorLines++;
+            DrawCenterText('□ □ □ □         \¥3000-');cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
 
