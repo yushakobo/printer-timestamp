@@ -123,6 +123,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
     let BarcodeAddon1hour = '2020000005025'; // 追加一時間のインストアJAN
     let BarcodePaidDesolderer = '2400000080459'; // 有償工具貸し出しのインストアJAN
     let BarcodePaidSupport = '2020000007012'; // 有償サポートのインストアJAN
+    let BarcodePaidSolder = '2400000082224'; //はんだ付け講習サービスのインストアJAN
     
     let StoreCloses = new Date(); // 閉店時間を設定する変数
     if(mode_test | document.getElementById("mode_test").checked){
@@ -170,16 +171,16 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
 
 //      cursor = 0;
         var ClipSpace = 140;
-        var BarcodeDrawStartPosition = ClipSpace - lineSpace *2;
-        var BarcodeHeight = lineSpace *3;
+        var BarcodeDrawStartPosition = ClipSpace - lineSpace *1;
+        var BarcodeHeight = lineSpace *2;
         cursor = ClipSpace; // クリップボードで挟む部分
         DrawCenterText('入室日時'+" "+EntryTime.toLocaleDateString('ja-JP')+" "+TimeAfter(EntryTime,0)); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
-        DrawCenterText("ご精算は退出時に");cursor += lineSpace; CursorLines++;
+        DrawCenterText("ご精算は退出時に！");cursor += lineSpace; CursorLines++;
         DrawCenterText("水～金,日：13～18時");cursor += lineSpace; CursorLines++;
-        DrawCenterText("土：11～18時");  cursor += lineSpace*1.25;
+        DrawCenterText("土：11～18時");cursor += lineSpace; CursorLines++;
+        DrawCenterText("□　お友達割引");  cursor += lineSpace*1.5;
         cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;// バーコード用スペース
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;//
         onDrawBarcode(BarcodeBasic2hours,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
@@ -189,7 +190,6 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
             
         }else{
             DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用  \¥2000-');  cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;//
             cursor += lineSpace; CursorLines++;// バーコード用スペース
             cursor += lineSpace; CursorLines++;//
             cursor += lineSpace; CursorLines++;//
@@ -219,9 +219,7 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         BarcodeNumbers++;
         //    DrawBlankCheckbox(cursor)
             DrawRightText('有償工具貸し出し　');cursor += lineSpace; CursorLines++;
-            DrawCenterText('□                   \¥1500-');cursor += lineSpace; CursorLines++;
-
-        cursor += lineSpace; CursorLines++;//
+            DrawLeftText('      □                        \¥1500-');cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;// バーコード用スペース
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;//
@@ -229,9 +227,16 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         BarcodeNumbers++;
         //    DrawBlankCheckbox(cursor)
             DrawRightText('有償技術サポート(30分)　');cursor += lineSpace; CursorLines++;
-            DrawCenterText('□ □ □ □         \¥3000-');cursor += lineSpace; CursorLines++;
+            DrawLeftText('      □ □ □ □               \¥3000-');cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
+        cursor += lineSpace; CursorLines++;
+
+        onDrawBarcode(BarcodePaidSolder,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
+
+        //    DrawBlankCheckbox(cursor)
+        DrawRightText('はんだ付け講習サービス　');cursor += lineSpace; CursorLines++;
+        DrawLeftText('      □                        \¥1500-');cursor += lineSpace; CursorLines++;
 
         var img_logo = new Image();
 
