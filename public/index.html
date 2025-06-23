@@ -177,9 +177,10 @@ function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
         DrawCenterText('入室日時'+" "+EntryTime.toLocaleDateString('ja-JP')+" "+TimeAfter(EntryTime,0)); cursor += lineSpace; CursorLines++;
         cursor += lineSpace; CursorLines++;
         DrawCenterText("ご精算は退出時に！");cursor += lineSpace; CursorLines++;
-        DrawCenterText("水～金,日：13～18時");cursor += lineSpace; CursorLines++;
-        DrawCenterText("土：11～18時");cursor += lineSpace; CursorLines++;
-        DrawCenterText("□　お友達割引");  cursor += lineSpace*1.5;
+        DrawCenterText("月～木,日：13～19時");cursor += lineSpace; CursorLines++;
+        DrawCenterText("金：13～20時");cursor += lineSpace; CursorLines++;
+        DrawCenterText("土：11～20時");cursor += lineSpace; CursorLines++;
+        cursor += lineSpace*1.5;
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;//
         cursor += lineSpace; CursorLines++;//
@@ -691,8 +692,8 @@ function TimeAfter(DateTypeObject, after=0){
                                     <option value="15">15</option>
                                     <option value="16">16</option>
                                     <option value="17">17</option>
-                                    <option value="18" selected="selected">18</option>
-                                    <option value="19">19</option>
+                                    <option value="18">18</option>
+                                    <option value="19" selected="selected">19</option>
                                     <option value="20">20</option>
                                 </select>
                                 <select name="closing minute" id="StoreClosesInHtmlMinute">
