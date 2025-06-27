@@ -1,613 +1,578 @@
-﻿<!DOCTYPE html>
-<!--
-//
-// Star webPRNT Sample(Canvas Receipt)
-//
-// Version 1.2.0
-//
-// Copyright (C) 2012-2015 STAR MICRONICS CO., LTD. All Rights Reserved.
-//
--->
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Expires" content="86400">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Star webPRNT Sample(Canvas Receipt)</title>
+<title>入退室チケット作成システム</title>
 
 <link href="css/import.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="style.css" media="screen">
-
 <link href="css/style_canvasreceipt.css" rel="stylesheet" type="text/css">
 <script type='text/javascript' src='js/StarWebPrintBuilder.js'></script>
 <script type='text/javascript' src='js/StarWebPrintTrader.js'></script>
 <script type='text/javascript' src='js/StarBarcodeEncoder.js'></script>
+
 <script type='text/javascript'>
 //<!--
-var cursor         = 0;
-var lineSpace      = 0;
-var leftPosition   = 0;
-var centerPosition = 0;
-var rightPosition  = 0;
+// =========================
+// 設定変数（ここを変更して設定を調整）
+// =========================
 
+// 曜日別営業時間設定（24時間制）
+const BUSINESS_HOURS = {
+    0: { open: 12, close: 19 }, // 日曜日
+    1: { open: 12, close: 19 }, // 月曜日
+    2: { open: 12, close: 19 }, // 火曜日
+    3: { open: 12, close: 19 }, // 水曜日
+    4: { open: 12, close: 19 }, // 木曜日
+    5: { open: 12, close: 20 }, // 金曜日
+    6: { open: 11, close: 20 }  // 土曜日
+};
+
+// JANコード設定
+const JAN_CODES = {
+    basic2hours: '2020000005018',        // 基本2時間
+    addon1hour: '2020000005025',         // 追加1時間
+    paidDesolderer: '2400000080459',     // 有償工具貸し出し
+    paidSupport: '2020000007012',        // 有償サポート
+    paidSolder: '2400000082224'          // はんだ付け講習
+};
+
+// 料金設定
+const PRICES = {
+    basic2hours: 2000,          // 基本2時間料金
+    addon1hour: 1000,           // 追加1時間料金
+    paidDesolderer: 1500,       // 有償工具貸し出し料金
+    paidSupport: 3000,          // 有償サポート料金（30分）
+    paidSolder: 1500            // はんだ付け講習料金
+};
+
+// チケット文言設定
+const TICKET_TEXT = {
+    entryDateTime: '入室日時',
+    paymentNotice: 'ご精算は退出時に！',
+    basicUsage: ' までのご利用  ¥',
+    additionalUsage: '以降1時間ごとに +¥',
+    hourlyUsage: '時間ごと +¥',
+    paidToolRental: '有償工具貸し出し',
+    paidTechSupport: '有償技術サポート(30分)',
+    solderTraining: 'はんだ付け講習サービス'
+};
+
+// 時間表示設定（1行に表示する時間数）
+const HOURS_PER_LINE = 3;
+
+// =========================
+// グローバル変数
+// =========================
+var cursor = 0;
+var lineSpace = 0;
+var leftPosition = 0;
+var centerPosition = 0;
+var rightPosition = 0;
+
+// =========================
+// 営業時間表示用の関数
+// =========================
+function getBusinessHoursText() {
+    const hoursText = [];
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    
+    // 同じ営業時間の曜日をグループ化
+    const groupedHours = {};
+    for (let i = 0; i < 7; i++) {
+        const hours = BUSINESS_HOURS[i];
+        const key = `${hours.open}-${hours.close}`;
+        if (!groupedHours[key]) {
+            groupedHours[key] = [];
+        }
+        groupedHours[key].push(i);
+    }
+    
+    // グループ化された営業時間を表示用テキストに変換
+    for (const [timeRange, dayIndices] of Object.entries(groupedHours)) {
+        const [open, close] = timeRange.split('-').map(Number);
+        const dayNames = dayIndices.map(i => days[i]);
+        
+        // 連続する曜日をまとめる
+        const groupedDays = [];
+        let currentGroup = [dayNames[0]];
+        
+        for (let i = 1; i < dayNames.length; i++) {
+            const prevIndex = dayIndices[i-1];
+            const currentIndex = dayIndices[i];
+            
+            if (currentIndex === prevIndex + 1 || (prevIndex === 6 && currentIndex === 0)) {
+                currentGroup.push(dayNames[i]);
+            } else {
+                if (currentGroup.length > 2) {
+                    groupedDays.push(`${currentGroup[0]}～${currentGroup[currentGroup.length-1]}`);
+                } else {
+                    groupedDays.push(currentGroup.join(','));
+                }
+                currentGroup = [dayNames[i]];
+            }
+        }
+        
+        if (currentGroup.length > 2) {
+            groupedDays.push(`${currentGroup[0]}～${currentGroup[currentGroup.length-1]}`);
+        } else {
+            groupedDays.push(currentGroup.join(','));
+        }
+        
+        hoursText.push(`${groupedDays.join(',')}：${open}～${close}時`);
+    }
+    
+    return hoursText;
+}
+
+// =========================
+// 描画関数
+// =========================
 function DrawLeftText(text) {
     var canvas = document.getElementById('canvasPaper');
-
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
         context.textAlign = 'left';
-
         context.fillText(text, leftPosition, cursor);
-
         context.textAlign = 'start';
     }
 }
 
 function DrawCenterText(text) {
     var canvas = document.getElementById('canvasPaper');
-
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
         context.textAlign = 'center';
-
         context.fillText(text, centerPosition, cursor);
-
         context.textAlign = 'start';
     }
 }
 
 function DrawRightText(text) {
     var canvas = document.getElementById('canvasPaper');
-
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
         context.textAlign = 'right';
-
         context.fillText(text, rightPosition, cursor);
-
         context.textAlign = 'start';
     }
 }
 
-function DrawBlankCheckbox(startposition){
-    var canvas = document.getElementById('canvasPaper');
-
-    if(canvas.getContext) {
-        var context = canvas.getContext('2d');
-        
-        context.fillRect(25, startposition+4, 40, 40);
-        context.clearRect(28, startposition+7, 35, 35);
-    }
+// 複数行テキストを描画する関数（新規追加）
+function DrawMultiLineText(text) {
+    const lines = text.split('\n');
+    lines.forEach(line => {
+        if (line.trim()) { // 空行でない場合のみ描画
+            DrawCenterText(line);
+        }
+        cursor += lineSpace;
+    });
 }
 
+function DrawTextAndBarcode(text, janCode, canvas, context, receiptWidth) {
+    // テキストを描画
+    DrawCenterText(text);
+    cursor += lineSpace;
+    
+    // バーコードを描画
+    onDrawBarcode(janCode, 50, cursor, lineSpace * 2);
+    cursor += lineSpace * 3; // バーコード分のスペース
+}
+
+// サービス情報を複数行で描画する関数
+function DrawServiceTextAndBarcode(serviceName, checkboxText, price, janCode, canvas, context, receiptWidth) {
+    // サービス名を描画
+    DrawCenterText(serviceName);
+    cursor += lineSpace;
+    
+    // チェックボックス + 価格を描画
+    DrawCenterText(checkboxText);
+    cursor += lineSpace;
+    
+    // バーコードを描画
+    onDrawBarcode(janCode, 50, cursor, lineSpace * 2);
+    cursor += lineSpace * 3; // バーコード分のスペース
+}
+
+// 時間別料金の表示を生成する関数（修正版）
+function generateHourlySchedule(entryTime, storeCloses, pricePerHour) {
+    const timeSlots = [];
+    let currentTime = new Date(entryTime);
+    currentTime.setHours(currentTime.getHours() + 2);
+
+    // 最初に1時間進めてからループ
+    currentTime.setHours(currentTime.getHours() + 1);
+
+    const times = [];
+    while (currentTime < storeCloses) {
+        const hour = currentTime.getHours();
+        const minute = currentTime.getMinutes();
+        times.push({ hour, minute });
+        currentTime.setHours(currentTime.getHours() + 1);
+    }
+
+    if (times.length === 0) return '';
+
+    // HOURS_PER_LINE で設定された数ずつ改行するラベル生成
+    const rows = [];
+    for (let i = 0; i < times.length; i += HOURS_PER_LINE) {
+        const chunk = times.slice(i, i + HOURS_PER_LINE).map(({ hour, minute }) => {
+            return minute === 0 ? `${hour}` : `${hour}:${minute.toString().padStart(2, '0')}`;
+        });
+        rows.push(chunk.join('/'));
+    }
+
+    return rows.map((row, idx) => {
+        return idx === rows.length - 1 ? row + ` +\u00A5${pricePerHour}-` : row;
+    }).join('\n');
+}
+
+// =========================
+// メイン描画関数
+// =========================
 function onDrawReceipt() {
     switch (document.getElementById('paperWidth').value) {
-        case 'inch2' :
+        case 'inch2':
             drawReceipt(28, 28, 384, 1);
             break;
-        case 'inch3DotImpact' :
+        case 'inch3DotImpact':
             drawReceipt(32, 32, 576, 1.5);
             break;
-        default :
+        default:
             drawReceipt(32, 32, 576, 1.5);
             break;
-        case 'inch4' :
+        case 'inch4':
             drawReceipt(48, 48, 832, 2);
             break;
     }
 }
 
-function drawReceipt(fontSize, lineSpace, receiptWidth, logoScale) {
+function drawReceipt(fontSize, ls, receiptWidth, logoScale) {
     var canvas = document.getElementById('canvasPaper');
-
-//    var isResinUVAvailable = true;
-    var isResinUVAvailable = false;
-
-//    var isWifiAvailable = true;
-    var isWifiAvailable = false;
+    lineSpace = ls;
     
-//    var mode_test = true;
-    var mode_test = false;// テストモードのオンオフ 曜日や祝日、時刻を変えた場合の挙動を見るときに使う
-
-    var BarcodeNumbers = 0;// 表示するバーコードの数 表示できる数に上限があるので表示するものとしないものを分けるときに使う
-
-    var CursorLines = 0;
-    let EntryTime = new Date();// ご利用日時を取得
-
-    EntryTime.setMinutes(EntryTime.getMinutes() + 5); //受付後、作業を始めるまでのタイムラグを考慮
-
-    let BarcodeBasic2hours = '2020000005018'; // 基本2時間のインストアJAN
-    let BarcodeAddon1hour = '2020000005025'; // 追加一時間のインストアJAN
-    let BarcodePaidDesolderer = '2400000080459'; // 有償工具貸し出しのインストアJAN
-    let BarcodePaidSupport = '2020000007012'; // 有償サポートのインストアJAN
-    let BarcodePaidSolder = '2400000082224'; //はんだ付け講習サービスのインストアJAN
+    // テストモード設定
+    var mode_test = document.getElementById("mode_test").checked;
     
-    let StoreCloses = new Date(); // 閉店時間を設定する変数
-    if(mode_test | document.getElementById("mode_test").checked){
-        let ModeTestTime =  new Date();
-//        EntryTime.setDate(document.getElementById("TestModeDate").value);
-//        EntryTime.setTime(document.getElementById("TestModeTime").value);
-//        StoreCloses.setDate(document.getElementById("TestModeDate").value);
-        ModeTestTime.setDate(document.getElementById("TestModeDate").value);
-        ModeTestTime.setTime(document.getElementById("TestModeTime").value);
-//        let hours_test = 10;
-//        let minutes_test = 15;
-//        let month_test = 5;
-//        let date_test = 3;
-//        EntryTime.setHours(hours_test);
-//        EntryTime.setMinutes(minutes_test);
-//        EntryTime.setMonth(month_test);
-//        EntryTime = ModeTestTime;
-//        StoreCloses.setMonth(ModeTestTime.getMonth);
-        StoreCloses.setDate(ModeTestTime.getDate.value);
+    // 現在時刻を取得（テストモード考慮）
+    let EntryTime = new Date();
+    if (mode_test) {
+        const testDate = document.getElementById("TestModeDate").value;
+        const testTime = document.getElementById("TestModeTime").value;
+        if (testDate && testTime) {
+            EntryTime = new Date(testDate + 'T' + testTime);
+        }
     }
-    //ページから取得する
-    StoreCloses.setHours(document.getElementById("StoreClosesInHtmlHour").value-2);
-    StoreCloses.setMinutes(document.getElementById("StoreClosesInHtmlMinute").value);
-//    StoreCloses.setTime(document.getElementById("StoreClosesInHtml").value);
-    let StoreCloseText = (StoreCloses.getHours()+2)+":"+String(StoreCloses.getMinutes()).padStart(2, '0');
+    
+    // 作業開始までのタイムラグを考慮
+    EntryTime.setMinutes(EntryTime.getMinutes() + 5);
+    
+    // 閉店時間を設定
+    let StoreCloses = new Date(EntryTime);
+    const dayOfWeek = EntryTime.getDay();
+    const businessHours = BUSINESS_HOURS[dayOfWeek];
+    
+    StoreCloses.setHours(businessHours.close);
+    StoreCloses.setMinutes(0);
+    
+    // 閉店時間上書きの設定（チェックボックスで制御）
+    if (document.getElementById("overrideClosingTime").checked) {
+        const htmlCloseHour = parseInt(document.getElementById("StoreClosesInHtmlHour").value);
+        const htmlCloseMinute = parseInt(document.getElementById("StoreClosesInHtmlMinute").value);
+        if (htmlCloseHour && htmlCloseMinute >= 0) {
+            StoreCloses.setHours(htmlCloseHour);
+            StoreCloses.setMinutes(htmlCloseMinute);
+        }
+    }
+    
+    const StoreCloseText = StoreCloses.getHours() + ":" + String(StoreCloses.getMinutes()).padStart(2, '0');
 
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-//      context.textAlign    = 'start';
         context.textBaseline = 'top';
-
-        let font = '';
-
-//        if (document.getElementById('italic').checked) font += 'italic ';
-
-        font += fontSize + 'px Arial';
+        
+        let font = fontSize + 'px Arial';
         context.font = font;
-
-        leftPosition   =  0;
+        
+        leftPosition = 0;
         centerPosition = (canvas.width - 16) / 2;
-        rightPosition  = (canvas.width - 16);
-
-//      cursor = 0;
+        rightPosition = (canvas.width - 16);
+        
+        // クリップボード用スペース
         var ClipSpace = 140;
-        var BarcodeDrawStartPosition = ClipSpace - lineSpace *1;
-        var BarcodeHeight = lineSpace *2;
-        cursor = ClipSpace; // クリップボードで挟む部分
-        DrawCenterText('入室日時'+" "+EntryTime.toLocaleDateString('ja-JP')+" "+TimeAfter(EntryTime,0)); cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        DrawCenterText("ご精算は退出時に！");cursor += lineSpace; CursorLines++;
-        DrawCenterText("月～木,日：13～19時");cursor += lineSpace; CursorLines++;
-        DrawCenterText("金：13～20時");cursor += lineSpace; CursorLines++;
-        DrawCenterText("土：11～20時");cursor += lineSpace; CursorLines++;
-        cursor += lineSpace*1.5;
-        cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;//
-        onDrawBarcode(BarcodeBasic2hours,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
-        BarcodeNumbers++;
-        if(EntryTime.getTime() >= StoreCloses.getTime()){//閉店時刻-2時間での入室かどうか
-            DrawCenterText(StoreCloseText+' までのご利用 \¥2000-');  cursor += lineSpace; CursorLines++;
+        cursor = ClipSpace;
+        
+        // ヘッダー情報
+        DrawCenterText(TICKET_TEXT.entryDateTime + " " + EntryTime.toLocaleDateString('ja-JP') + " " + TimeAfter(EntryTime, 0));
+        cursor += lineSpace * 2;
+        
+        DrawCenterText(TICKET_TEXT.paymentNotice);
+        cursor += lineSpace;
+        
+        // 営業時間表示
+        const businessHoursText = getBusinessHoursText();
+        businessHoursText.forEach(text => {
+            DrawCenterText(text);
+            cursor += lineSpace;
+        });
+        
+        cursor += lineSpace;
+        
+        // 基本料金とバーコード
+        const isNearClosing = EntryTime.getTime() >= (StoreCloses.getTime() - 2 * 60 * 60 * 1000);
+        const basicText = isNearClosing 
+            ? StoreCloseText + TICKET_TEXT.basicUsage + PRICES.basic2hours + '-'
+            : TimeAfter(EntryTime, 2) + TICKET_TEXT.basicUsage + PRICES.basic2hours + '-';
             
-        }else{
-            DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用  \¥2000-');  cursor += lineSpace; CursorLines++;
-            cursor += lineSpace; CursorLines++;// バーコード用スペース
-            cursor += lineSpace; CursorLines++;//
-            cursor += lineSpace; CursorLines++;//
-            onDrawBarcode(BarcodeAddon1hour,50,BarcodeDrawStartPosition+lineSpace*CursorLines, BarcodeHeight);
-            BarcodeNumbers++;
-/*            if(EntryTime.getDay() == '0' | EntryTime.getDay() == '6' | document.getElementById('holiday').checked){//土曜か日曜、祝日チェックボックスにチェックが入っているかどうか
-                if(EntryTime.getTime() >= StoreCloses.getTime()){//土日祝日で、閉店時間-4時間でないかどうか
-                    DrawCenterText(StoreCloseText+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
-                }else{//土日祝日で閉店まで4時間以上ある場合
-                    DrawCenterText(TimeAfter(EntryTime,2)+' までのご利用 \¥1000-');  cursor += lineSpace; CursorLines++;
-                    DrawCenterText('以降1時間ごとに +\¥500-');cursor += lineSpace; CursorLines++;
-                }
-            }else{
-*/   
-                DrawCenterText('以降1時間ごとに +\¥1000-');  cursor += lineSpace; CursorLines++;
-/*
+        DrawTextAndBarcode(basicText, JAN_CODES.basic2hours, canvas, context, receiptWidth);
+        
+        // 時間別追加料金（閉店間際でない場合のみ）- 修正版
+        if (!isNearClosing) {
+            const hourlyScheduleText = generateHourlySchedule(EntryTime, StoreCloses, PRICES.addon1hour);
+            
+            if (hourlyScheduleText) {
+                // 複数行テキストを適切に描画
+                DrawMultiLineText(hourlyScheduleText);
+                
+                // バーコードを描画
+                onDrawBarcode(JAN_CODES.addon1hour, 50, cursor, lineSpace * 2);
+                cursor += lineSpace * 3; // バーコード分のスペース
             }
-*/            
         }
-        cursor += lineSpace; CursorLines++;
-        context.fillRect(0, cursor - 2, receiptWidth, 2);     // Underline
-        cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;// バーコード用スペース
-        cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;//
-        onDrawBarcode(BarcodePaidDesolderer,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
-        BarcodeNumbers++;
-        //    DrawBlankCheckbox(cursor)
-            DrawRightText('有償工具貸し出し　');cursor += lineSpace; CursorLines++;
-            DrawLeftText('      □                        \¥1500-');cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;// バーコード用スペース
-        cursor += lineSpace; CursorLines++;//
-        cursor += lineSpace; CursorLines++;//
-        onDrawBarcode(BarcodePaidSupport,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
-        BarcodeNumbers++;
-        //    DrawBlankCheckbox(cursor)
-            DrawRightText('有償技術サポート(30分)　');cursor += lineSpace; CursorLines++;
-            DrawLeftText('      □ □ □ □               \¥3000-');cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-        cursor += lineSpace; CursorLines++;
-
-        onDrawBarcode(BarcodePaidSolder,50,BarcodeDrawStartPosition + lineSpace * CursorLines, BarcodeHeight);
-
-        //    DrawBlankCheckbox(cursor)
-        DrawRightText('はんだ付け講習サービス　');cursor += lineSpace; CursorLines++;
-        DrawLeftText('      □                        \¥1500-');cursor += lineSpace; CursorLines++;
-
+        
+        // 区切り線
+        context.fillRect(0, cursor - 2, receiptWidth, 2);
+        cursor += lineSpace * 2;
+        
+        // 有償サービス（複数行表示）
+        DrawServiceTextAndBarcode(
+            TICKET_TEXT.paidToolRental,
+            '□　¥' + PRICES.paidDesolderer + '-',
+            PRICES.paidDesolderer,
+            JAN_CODES.paidDesolderer,
+            canvas, context, receiptWidth
+        );
+        
+        DrawServiceTextAndBarcode(
+            TICKET_TEXT.paidTechSupport,
+            '□ □ □ □　¥' + PRICES.paidSupport + '-',
+            PRICES.paidSupport,
+            JAN_CODES.paidSupport,
+            canvas, context, receiptWidth
+        );
+        
+        DrawServiceTextAndBarcode(
+            TICKET_TEXT.solderTraining,
+            '□　¥' + PRICES.paidSolder + '-',
+            PRICES.paidSolder,
+            JAN_CODES.paidSolder,
+            canvas, context, receiptWidth
+        );
+        
+        // ロゴ描画
         var img_logo = new Image();
-
-        img_logo.src = 'img/LOGOout.jpg' + '?' + new Date().getTime();
-
+        img_logo.src = 'img/LOGOout.jpg?' + new Date().getTime();
         var logoscale = 0.8;
-
-        img_logo.onload = function () {
-//            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
+        
+        img_logo.onload = function() {
             context.drawImage(img_logo, 60 * logoscale, 25 * logoscale, img_logo.width * logoscale, img_logo.height * logoscale);
         }
-
-        img_logo.onerror = function () {
-            alert('Image file was not able to be loaded.');
-        }
-
         
-        if(isWifiAvailable | document.getElementById('wifi_availability').checked){
-            var img_wifi = new Image();
-
-            img_wifi.src = 'img/wifi_available.png' + '?' + new Date().getTime();
-
-            var wifilogoscale = 0.2;
-
-            img_wifi.onload = function () {
-    //            context.drawImage(image, canvas.width - image.width * wifilogoscale, 0, image.width * wifilogoscale, image.height * wifilogoscale);
-                context.drawImage(img_wifi, 0, wifilogodrawstart, img_wifi.width * wifilogoscale, img_wifi.height * wifilogoscale);
-            }
-
-            img_wifi.onerror = function () {
-                alert('Image file was not able to be loaded.');
-            }
+        img_logo.onerror = function() {
+            console.log('Logo image could not be loaded.');
         }
     }
 }
 
-function encodeEscapeSequence(data) {
-    var regexp = /\\[tnr\\]/g;
-
-    if (regexp.test(data)) {
-        data = data.replace(regexp, function (match) {
-            switch (match) {
-                case '\\t' : return '\\x09';
-                case '\\n' : return '\\x0a';
-                case '\\r' : return '\\x0d';
-            }
-
-            return '\\x5c';
-        });
-    }
-
-    var regexp = /\\[Xx][0-9A-Fa-f]{2}/g;
-
-    if (regexp.test(data)) {
-        data = data.replace(regexp, function (match) {
-            return String.fromCharCode(parseInt(match.slice(2), 16));
-        });
-    }
-
-    return data;
-}
-
-function onChangeSymbology() {
-    switch (document.getElementById('symbology').value) {
-        default          :     // 'UPC-E'
-//      case 'UPC-A'     :
-//      case 'JAN/EAN8'  :
-//      case 'JAN/EAN13' :
-//      case 'Code128'   :
-//      case 'Code93'    :
-            document.getElementById('modulebox0').style.display="inline";
-            document.getElementById('modulebox1').style.display="none";
-            document.getElementById('modulebox2').style.display="none";
-            break;
-        case 'Code39' :
-        case 'NW-7'   :
-            document.getElementById('modulebox0').style.display="none";
-            document.getElementById('modulebox1').style.display="inline";
-            document.getElementById('modulebox2').style.display="none";
-            break;
-        case 'ITF' :
-            document.getElementById('modulebox0').style.display="none";
-            document.getElementById('modulebox1').style.display="none";
-            document.getElementById('modulebox2').style.display="inline";
-            break;
-    }
-}
-
-function onExampleData() {
-    switch (document.getElementById('symbology').value) {
-        default          : document.getElementById('data').value = '01234500006';  break;     // 'UPC-E'
-        case 'UPC-A'     : document.getElementById('data').value = '01234567890';  break;
-        case 'JAN/EAN8'  : document.getElementById('data').value = '0123456';      break;
-        case 'JAN/EAN13' : document.getElementById('data').value = '012345678901'; break;
-        case 'Code39'    : document.getElementById('data').value = '0123456789';   break;
-        case 'ITF'       : document.getElementById('data').value = '0123456789';   break;
-        case 'Code128'   : document.getElementById('data').value = '{B0123456789'; break;
-        case 'Code93'    : document.getElementById('data').value = '0123456789';   break;
-        case 'NW-7'      : document.getElementById('data').value = 'A0123456789B'; break;
-    }
-}
-
+// =========================
+// バーコード描画関数
+// =========================
 function onDrawBarcode(data, XPosition, YPosition, height) {
     var canvas = document.getElementById('canvasPaper');
-
+    
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
+        
         try {
-//            var x = parseInt(document.getElementById('positionX').value);
             var x = XPosition;
-//            var y = parseInt(document.getElementById('positionY').value);
             var y = YPosition;
-
-            var moduleSize       = 0;
-            var narrowModuleSize = 0;
-            var wideModuleSize   = 0;
-
-            switch (document.getElementById('symbology').value) {
-                default          :     // 'UPC-E'
-//              case 'UPC-A'     :
-//              case 'JAN/EAN8'  :
-//              case 'JAN/EAN13' :
-//              case 'Code128'   :
-//              case 'Code93'    :
-                    var module = document.getElementById('module0').value;
-
-                    moduleSize = parseInt(module);
-                    break;
-                case 'Code39' :
-                case 'NW-7'   :
-                    var module = document.getElementById('module1').value;
-
-                    narrowModuleSize = parseInt(module.split(':')[0]);
-                    wideModuleSize   = parseInt(module.split(':')[1]);
-                    break;
-                case 'ITF' :
-                    var module = document.getElementById('module2').value;
-
-                    narrowModuleSize = parseInt(module.split(':')[0]);
-                    wideModuleSize   = parseInt(module.split(':')[1]);
-                    break;
-            }
-
-//            var height = parseInt(document.getElementById('height').value);
-
+            var moduleSize = 3; // 固定値
+            
             var encoder = new StarBarcodeEncoder();
-
-            var lineImage = '';
-
-//            var data = encodeEscapeSequence(document.getElementById('data').value);
-//            var data = encodeEscapeSequence('2011000001018');
-
-            switch (document.getElementById('symbology').value) {
-                default          : lineImage = encoder.createUPCE   ({data:data}); break;     // 'UPC-E'
-                case 'UPC-A'     : lineImage = encoder.createUPCA   ({data:data}); break;
-                case 'JAN/EAN8'  : lineImage = encoder.createJAN8   ({data:data}); break;
-                case 'JAN/EAN13' : lineImage = encoder.createJAN13  ({data:data}); break;
-                case 'Code39'    : lineImage = encoder.createCode39 ({data:data}); break;
-                case 'ITF'       : lineImage = encoder.createITF    ({data:data}); break;
-                case 'Code128'   : lineImage = encoder.createCode128({data:data}); break;
-                case 'Code93'    : lineImage = encoder.createCode93 ({data:data}); break;
-                case 'NW-7'      : lineImage = encoder.createNW7    ({data:data}); break;
-            }
-
+            var lineImage = encoder.createJAN13({data: data});
+            
             var pos = x;
-
+            
             for (var i = 0; i < lineImage.length; i++) {
                 if (lineImage.charAt(i).match(/[1WN]/g)) {
                     context.fillStyle = '#000000';
                 }
-
+                
                 switch (lineImage.charAt(i)) {
-                    case '1' :
+                    case '1':
                         context.fillRect(pos, y, moduleSize, height);
-//                      break;     // through!!!
-                    case '0' :
+                    case '0':
                         pos += moduleSize;
-                        break;
-                    case 'N' :
-                        context.fillRect(pos, y, narrowModuleSize, height);
-//                      break;     // through!!!
-                    case 'n' :
-                        pos += narrowModuleSize;
-                        break;
-                    case 'W' :
-                        context.fillRect(pos, y, wideModuleSize, height);
-//                      break;     // through!!!
-                    case 'w' :
-                        pos += wideModuleSize;
                         break;
                 }
             }
-
-            document.getElementById('positionY').value = y + height + 16;
-//          document.getElementById('positionY').value = y + height;
-        }
-        catch (e) {
-            alert(e.message);
+        } catch (e) {
+            alert('バーコード生成エラー: ' + e.message);
         }
     }
 }
 
+// =========================
+// ユーティリティ関数
+// =========================
+function TimeAfter(DateTypeObject, afterHours = 0) {
+    var newDate = new Date(DateTypeObject);
+    newDate.setHours(newDate.getHours() + afterHours);
+    return newDate.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
+}
+
+function encodeEscapeSequence(data) {
+    var regexp = /\\[tnr\\]/g;
+    if (regexp.test(data)) {
+        data = data.replace(regexp, function(match) {
+            switch (match) {
+                case '\\t': return '\\x09';
+                case '\\n': return '\\x0a';
+                case '\\r': return '\\x0d';
+            }
+            return '\\x5c';
+        });
+    }
+    
+    var regexp = /\\[Xx][0-9A-Fa-f]{2}/g;
+    if (regexp.test(data)) {
+        data = data.replace(regexp, function(match) {
+            return String.fromCharCode(parseInt(match.slice(2), 16));
+        });
+    }
+    
+    return data;
+}
+
+// =========================
+// キャンバス関連関数
+// =========================
 function onResizeCanvas() {
     var canvas = document.getElementById('canvasPaper');
-
+    
     if (canvas.getContext) {
-        var context = canvas.getContext('2d');
-
         switch (document.getElementById('paperWidth').value) {
-            case 'inch2' :
+            case 'inch2':
                 canvas.width = 384;
                 canvas.height = 1050;
                 break;
-            case 'inch3DotImpact' :
+            case 'inch3DotImpact':
                 canvas.width = 576;
                 canvas.height = 1050;
                 break;
-            default :
+            default:
                 canvas.width = 576;
                 canvas.height = 1050;
                 break;
-            case 'inch4' :
+            case 'inch4':
                 canvas.width = 832;
                 canvas.height = 1050;
                 break;
         }
-        document.getElementById('canvasPaper').style.width="700px";
+        document.getElementById('canvasPaper').style.width = "700px";
         onDrawReceipt();
     }
 }
 
-function refocusFontSelectbox() {
-    var fontSelectbox = document.getElementById('font');
-    fontSelectbox.blur();
-    fontSelectbox.focus();
-}
-
-function refocusWidthSelectbox() {
-    var paperWidthSelectbox = document.getElementById('paperWidth');
-    paperWidthSelectbox.blur();
-    paperWidthSelectbox.focus();
-}
-
 function onClearCanvas() {
     var canvas = document.getElementById('canvasPaper');
-
     if (canvas.getContext) {
         var context = canvas.getContext('2d');
-
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-        document.getElementById('positionX').value = 0;
-        document.getElementById('positionY').value = 0;
     }
 }
 
+// =========================
+// 印刷関連関数
+// =========================
 function onSendMessage() {
-	showNowPrinting();
-
-    var url              = document.getElementById('url').value;
-    var papertype        = document.getElementById('papertype').value;
-
-    var trader = new StarWebPrintTrader({url:url, papertype:papertype});
-
-    trader.onReceive = function (response) {
+    showNowPrinting();
+    
+    var url = document.getElementById('url').value;
+    var papertype = document.getElementById('papertype').value;
+    
+    var trader = new StarWebPrintTrader({url: url, papertype: papertype});
+    
+    trader.onReceive = function(response) {
         hideNowPrinting();
-
-        var msg = '- onReceive -\n\n';
-
-        msg += 'TraderSuccess : [ ' + response.traderSuccess + ' ]\n';
-
-//      msg += 'TraderCode : [ ' + response.traderCode + ' ]\n';
-
-        msg += 'TraderStatus : [ ' + response.traderStatus + ',\n';
-
-        if (trader.isCoverOpen            ({traderStatus:response.traderStatus})) {msg += '\tCoverOpen,\n';}
-        if (trader.isOffLine              ({traderStatus:response.traderStatus})) {msg += '\tOffLine,\n';}
-        if (trader.isCompulsionSwitchClose({traderStatus:response.traderStatus})) {msg += '\tCompulsionSwitchClose,\n';}
-        if (trader.isEtbCommandExecute    ({traderStatus:response.traderStatus})) {msg += '\tEtbCommandExecute,\n';}
-        if (trader.isHighTemperatureStop  ({traderStatus:response.traderStatus})) {msg += '\tHighTemperatureStop,\n';}
-        if (trader.isNonRecoverableError  ({traderStatus:response.traderStatus})) {msg += '\tNonRecoverableError,\n';}
-        if (trader.isAutoCutterError      ({traderStatus:response.traderStatus})) {msg += '\tAutoCutterError,\n';}
-        if (trader.isBlackMarkError       ({traderStatus:response.traderStatus})) {msg += '\tBlackMarkError,\n';}
-        if (trader.isPaperEnd             ({traderStatus:response.traderStatus})) {msg += '\tPaperEnd,\n';}
-        if (trader.isPaperNearEnd         ({traderStatus:response.traderStatus})) {msg += '\tPaperNearEnd,\n';}
-
-        msg += '\tEtbCounter = ' + trader.extractionEtbCounter({traderStatus:response.traderStatus}).toString() + ' ]\n';
-
-//      msg += 'Status : [ ' + response.status + ' ]\n';
-//
-//      msg += 'ResponseText : [ ' + response.responseText + ' ]\n';
-
-    //    alert(msg);
+        console.log('Print successful');
     }
-
-    trader.onError = function (response) {
-        var msg = '- onError -\n\n';
-
-        msg += '\tStatus:' + response.status + '\n';
-
-        msg += '\tResponseText:' + response.responseText + '\n\n';
-
-        msg += 'Do you want to retry?\n';
-
+    
+    trader.onError = function(response) {
+        var msg = 'プリンタエラーが発生しました。\n再試行しますか？';
         var answer = confirm(msg);
-
+        
         if (answer) {
             onSendMessage();
-        }
-        else {
+        } else {
             hideNowPrinting();
         }
     }
-
+    
     try {
         var canvas = document.getElementById('canvasPaper');
-
+        
         if (canvas.getContext) {
             var context = canvas.getContext('2d');
-
             var builder = new StarWebPrintBuilder();
-
             var request = '';
-
+            
             request += builder.createInitializationElement();
-
-            request += builder.createBitImageElement({context:context, x:0, y:0, width:canvas.width, height:canvas.height});
-
-            request += builder.createCutPaperElement({feed:true});
-
-            trader.sendMessage({request:request});
+            request += builder.createBitImageElement({context: context, x: 0, y: 0, width: canvas.width, height: canvas.height});
+            request += builder.createCutPaperElement({feed: true});
+            
+            trader.sendMessage({request: request});
         }
-    }
-    catch (e) {
+    } catch (e) {
         hideNowPrinting();
-
-        alert(e.message);
+        alert('印刷エラー: ' + e.message);
     }
 }
-function nowLoading(){
-	document.getElementById('form').style.display="block";
-	document.getElementById('overlay').style.display="none";
-	document.getElementById('nowLoadingWrapper').style.display="none";
+
+// =========================
+// UI関連関数
+// =========================
+function nowLoading() {
+    document.getElementById('form').style.display = "block";
+    document.getElementById('overlay').style.display = "none";
+    document.getElementById('nowLoadingWrapper').style.display = "none";
 }
-function showNowPrinting(){
-    document.getElementById('overlay').style.display="block";
-    document.getElementById('nowPrintingWrapper').style.display="table";
+
+function showNowPrinting() {
+    document.getElementById('overlay').style.display = "block";
+    document.getElementById('nowPrintingWrapper').style.display = "table";
 }
-function hideNowPrinting(){
-    document.getElementById('overlay').style.opacity= 0.0;
-    document.getElementById('overlay').style.transition= "all 0.3s";
-    intimer = setTimeout(function (){
-        document.getElementById('overlay').style.display="none";
-    document.getElementById('overlay').style.opacity= 1;
-        clearTimeout(intimer);
+
+function hideNowPrinting() {
+    document.getElementById('overlay').style.opacity = 0.0;
+    document.getElementById('overlay').style.transition = "all 0.3s";
+    var timer = setTimeout(function() {
+        document.getElementById('overlay').style.display = "none";
+        document.getElementById('overlay').style.opacity = 1;
+        clearTimeout(timer);
     }, 300);
-    document.getElementById('nowPrintingWrapper').style.display="none";
+    document.getElementById('nowPrintingWrapper').style.display = "none";
 }
+
 window.onload = function() {
-	nowLoading();
-	onResizeCanvas();
+    nowLoading();
+    onResizeCanvas();
 }
-function TimeAfter(DateTypeObject, after=0){
-    //処理の都合上+2時間するための関数
-//    var now = new Date();
-    DateTypeObject.setHours(DateTypeObject.getHours() + after);
-//    DateTypeObject.setMinutes(DateTypeObject.getMinutes() + 10 - (DateTypeObject.getMinutes() % 5));
-    return DateTypeObject.toLocaleTimeString('ja-JP', { hour: 'numeric', minute: 'numeric', hour12: false });
-}
+
+//-->
 </script>
 <noscript>
     Your browser does not support JavaScript!
@@ -615,122 +580,106 @@ function TimeAfter(DateTypeObject, after=0){
 </head>
 
 <body>
+    <div id="overlay">
+        <div id="nowPrintingWrapper">
+            <section id="nowPrinting">
+                <h1>Now Printing</h1>
+                <p><img src="images/icon_loading.gif" /></p>
+            </section>
+        </div>
+        <div id="nowLoadingWrapper">
+            <section id="nowLoading">
+                <h1>Now Loading</h1>
+                <p><img src="images/icon_loading.gif" /></p>
+            </section>
+        </div>
+    </div>
 
-	<div id="overlay">
-		<div id="nowPrintingWrapper">
-			<section id="nowPrinting">
-				<h1>Now Printing</h1>
-				<p><img src="images/icon_loading.gif" /></p>
-			</section>
-		</div>
-		<div id="nowLoadingWrapper">
-			<section id="nowLoading">
-				<h1>Now Loading</h1>
-				<p><img src="images/icon_loading.gif" /></p>
-			</section>
-		</div>
-	</div>
+    <header id="global-header">
+        <h1><a href="A001.html"><img src="images/logo_01.png" alt="HOME" width="108" height="61"></a></h1>
+        <div id="sub-logo"><a href="http://www.star-m.jp/" target="_blank"><img src="images/logo_02.png" alt="" width="120" height="13"></a></div>
+    </header>
 
-<header id="global-header">
-<h1><a href="A001.html"><img src="images/logo_01.png" alt="HOME" width="108" height="61"></a></h1>
-<div id="sub-logo"><a href="http://www.star-m.jp/" target="_blank"><img src="images/logo_02.png" alt="" width="120" height="13"></a></div>
-</header>
-
-<section class="btmMg20">
-	<h2 class="h2-tit-01 btmMg20">Canvas : Receipt</h2>
-</section>
+    <section class="btmMg20">
+        <h2 class="h2-tit-01 btmMg20">入退室チケット作成システム</h2>
+    </section>
 
     <form onsubmit='return false;' id="form">
-		<div class="container">
-			<div class="wrapper">
-				<div id="canvasBlock">
-					<div id='canvasFrame'>
-						<canvas id='canvasPaper' width='576' height='1000'>
-							Your browser does not support Canvas!
-						</canvas>
-                     </div>
-				</div>
-			</div>
-			<div id="optionBlock">
+        <div class="container">
+            <div class="wrapper">
+                <div id="canvasBlock">
+                    <div id='canvasFrame'>
+                        <canvas id='canvasPaper' width='576' height='1000'>
+                            Your browser does not support Canvas!
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div id="optionBlock">
+                <!-- 閉店時間の上書き設定 -->
+                <dl>
+                    <dt>閉店時間上書き</dt>
+                    <dd>:
+                        <input id='overrideClosingTime' type='checkbox' onchange='onDrawReceipt()' />
+                    </dd>
+                </dl>
+
+                <!-- 閉店時間の設定 -->
+                <dl>
+                    <dt>閉店時間</dt>
+                    <dd>:
+                        <select name="closing hour" id="StoreClosesInHtmlHour" onchange="onDrawReceipt()">
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19" selected="selected">19</option>
+                            <option value="20">20</option>
+                        </select>
+                        時
+                        <select name="closing minute" id="StoreClosesInHtmlMinute" onchange="onDrawReceipt()">
+                            <option value="0" selected="selected">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                        分
+                    </dd>
+                </dl>
+
+                <!-- テストモード -->
+                <dl>
+                    <dt>テストモード</dt>
+                    <dd>:
+                        <input id='mode_test' type='checkbox' onclick='onDrawReceipt()' />
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>テスト日付</dt>
+                    <dd>:
+                        <input type="date" id="TestModeDate" onchange="onDrawReceipt()">
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>テスト時刻</dt>
+                    <dd>:
+                        <input type="time" id="TestModeTime" onchange="onDrawReceipt()">
+                    </dd>
+                </dl>
+
+                <!-- 隠し要素（印刷用設定） -->
                 <span style="display: none;">
                     <dl>
-                            <dt>Holiday</dt>
-                            <dd>:
-                            <input id='holiday' type='checkbox' onclick='onDrawReceipt()' />
+                        <dt>URL</dt>
+                        <dd>:
+                            <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" />
                         </dd>
                     </dl>
-                    <dl>
-                        <dt>UVResin</dt>
-                        <dd>:
-                        <input id='ResinUV' type='checkbox' onclick='onDrawReceipt()' />
-                    </dd>
-                    </dl>
-                    <dl>
-                        <dt>Wifi</dt>
-                        <dd>:
-                        <input id='wifi_availability' type='checkbox' onclick='onDrawReceipt()' />
-                    </dd>
-                    </dl>
-                </span>
-                    <!--閉店時間の設定--><!--
-                    
-                    <dl>
-                        <dt>Test Time</dt>
-                        <dd>:
-                            <input type="time" name="closingtime" id="StoreClosesInHtml" value="18:00">
-                        </dd>
-                    </dl>-->
-                    <dl>
-                        <dt>Close</dt>
-                        <dd>:
-                                <select name="closing hour" id="StoreClosesInHtmlHour">
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
-                                    <option value="13">13</option>
-                                    <option value="14">14</option>
-                                    <option value="15">15</option>
-                                    <option value="16">16</option>
-                                    <option value="17">17</option>
-                                    <option value="18">18</option>
-                                    <option value="19" selected="selected">19</option>
-                                    <option value="20">20</option>
-                                </select>
-                                <select name="closing minute" id="StoreClosesInHtmlMinute">
-                                    <option value="00" selected="selected">00</option>
-                                    <option value="15">15</option>
-                                    <option value="30">30</option>
-                                    <option value="45">45</option>
-                                </select>
-                        </dd>
-                    </dl><!-- 閉店時間の設定ここまで-->
-                    <!-- 現在時刻の設定(テストモード) -->
-                    <span style="display: none;">
-                    <dl>
-                        <dt>Test Mode</dt>
-                        <dd>:
-                            <input id='mode_test' type='checkbox' onclick='onDrawReceipt()' />
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>Test Date</dt>
-                        <dd>:
-                            <input type="date" name=testmodedate id="TestModeDate" date.value="2020-02-21">
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>Test Time</dt>
-                        <dd>:
-                            <input type="time" name="testmodetime" id="TestModeTime" time.value="10:23">
-                        </dd>
-                    </dl></span>
-                    <!-- 現在時刻の設定(テストモード) -->
-                    <span style="display: none;">
-                        <dl>
-                            <dt>URL</dt>
-                            <dd>:
-                            <input id="url" type="text" value="http://localhost:8001/StarWebPRNT/SendMessage" /></dd>
-                        </dl>
                     <dl>
                         <dt>Paper Type</dt>
                         <dd>:
@@ -742,130 +691,32 @@ function TimeAfter(DateTypeObject, after=0){
                             </select>
                         </dd>
                     </dl>
-                    </span>
-                        <input id="sendBtn" type="button" value="Redraw" onclick="onClearCanvas();onDrawReceipt();" />
-                        <input id="sendBtn" type="button" value="Send" onclick="onSendMessage()" />
-                <span style="display: none">
-				<dl>
-					<dt>Font</dt>
-					<dd>:
-						<select id='font' onchange='onDrawReceipt(); refocusFontSelectbox();'>
-                            <option selected='selected'>Arial</option>
-                            <option>Cambria</option>
-                            <option>Comic Sans MS</option>
-                            <option>Constantia</option>
-                            <option>Gabriola</option>
-                            <option>Georgia</option>
-                            <option>Segoe UI</option>
-                            <option>Fixedsys</option>
-                            <option>MS Serif</option>
-                        </select>
-                        &nbsp;<input id='italic' type='checkbox' onclick='onDrawReceipt()' />Italic
-					</dd>
-                </dl>
-                    <dl>
-                        <dt>Symbology</dt>
-                        <dd>:
-                            <select id='symbology' onchange='onChangeSymbology()'>
-                                <option>UPC-E</option>
-                                <option>UPC-A</option>
-                                <option>JAN/EAN8</option>
-                                <option selected='selected'>JAN/EAN13</option>
-                                <option>Code39</option>
-                                <option>ITF</option>
-                                <option>Code128</option>
-                                <option>Code93</option>
-                                <option>NW-7</option>
-                            </select>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>Module</dt>
-                        <dd>:
-                            <span id="modulebox0">
-                            <select id='module0'>
-                                <option>2</option>
-                                <option selected='selected'>3</option>
-                                <option>4</option>
-                            </select> dots
-                            </span>
-                            <span id="modulebox1" style="display:none;">                        <select id='module1'>
-                                <option selected='selected'>2:6</option>
-                                <option>3:9</option>
-                                <option>4:12</option>
-                                <option>2:5</option>
-                                <option>3:8</option>
-                                <option>4:10</option>
-                                <option>2:4</option>
-                                <option>3:6</option>
-                                <option>4:8</option>
-                            </select> dots
-                            </span>
-                            <span id="modulebox2" style="display:none;">
-                            <select id='module2'>
-                                <option selected='selected'>2:5</option>
-                                <option>4:10</option>
-                                <option>6:15</option>
-                                <option>2:4</option>
-                                <option>4:8</option>
-                                <option>6:12</option>
-                                <option>2:6</option>
-                                <option>3:9</option>
-                                <option>4:12</option>
-                            </select> dots
-                            </span>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>Height</dt>
-                        <dd>:
-                            <select id='height'>
-                                <option>20</option>
-                                <option>40</option>
-                                <option>60</option>
-                                <option selected='selected'>80</option>
-                                <option>100</option>
-                                <option>120</option>
-                            </select> dots
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt>Data</dt>
-                        <dd>:
-                            <input id='data' type='text' size='30' value='012345678901' />
-                            <div class="note">Hexadecimal:'\x00'-'\xff', HorizontalTab:'\t', LineFeed:'\n', CarriageReturn:'\r', BackSlash:'\\'</div>
-                            </dd>
-                    </dl>
-                    <dl>
-                        <dt>Position</dt>
-                        <dd>:
-                            X=
-                            <input id='positionX' type='text' size='5' value='50' />
-                            Y=
-                            <input id='positionY' type='text' size='5' value='0' />
-                        </dd>
-                    </dl>
-				<dl>
-					<dt>Paper Width</dt>
-					<dd>:
-						<select id='paperWidth' onchange='onResizeCanvas(); refocusWidthSelectbox();'>
-							<option value='inch2' selected='selected'>2 Inch</option>
-							<option value='inch3'>3 Inch</option>
-							<option value='inch4'>4 Inch</option>
-						</select>
-					</dd>
-                </dl>
-                <div id="drawBtnBlock">
-					<input id="drawBtn" type='button' value='Draw' onclick='onDrawBarcode()' />
-				</div>
-			</div>
-			<hr>
-		</div>
-	</form>
-<footer id="global-footer" class="clearfix">
-	<a href="https://www.star-m.jp/starwebprnt-oml.html" target="_blank"><img src="images/footer-logo.png" width="123" alt="" id="footer-logo"></a>
-    <img src="images/footer-image.png"height="54" alt=""/>
-</footer>
+                </span>
 
+                <!-- 用紙サイズ設定 -->
+                <dl>
+                    <dt>用紙サイズ</dt>
+                    <dd>:
+                        <select id='paperWidth' onchange='onResizeCanvas()'>
+                            <option value='inch2' selected='selected'>2 Inch</option>
+                            <option value='inch3'>3 Inch</option>
+                            <option value='inch4'>4 Inch</option>
+                        </select>
+                    </dd>
+                </dl>
+
+                <!-- 操作ボタン -->
+                <div id="drawBtnBlock">
+                    <input id="redrawBtn" type="button" value="再描画" onclick="onClearCanvas();onDrawReceipt();" style="font-size: 1.5em; padding: 0.5em 1em;" />
+                    <input id="sendBtn" type="button" value="印刷" onclick="onSendMessage()" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <footer id="global-footer" class="clearfix">
+        <a href="https://www.star-m.jp/starwebprnt-oml.html" target="_blank"><img src="images/footer-logo.png" width="123" alt="" id="footer-logo"></a>
+        <img src="images/footer-image.png" height="54" alt=""/>
+    </footer>
 </body>
 </html>
